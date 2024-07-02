@@ -6,6 +6,7 @@ import { Document, Page } from "react-pdf"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db, Book } from "../db/db"
 import styles from "./index.module.css"
+import { BiAddToQueue } from "react-icons/bi";
 
 export const Route = createLazyFileRoute("/")({
 	component: Index
@@ -62,32 +63,33 @@ function Index() {
 		<>
 			<DropZone >
 				<section className={styles.dashboard}>
-				{books.map(book => (
-					<>
-						<div className={styles.book}>
-							<Document
-								file={book.data}
-								key={"book-" + book.id}
-							>
-								<Page
-									pageNumber={1}
-									renderTextLayer={false}
-									renderAnnotationLayer={false}
-									height={375}
-									width={234}
-								/>
-							</Document>
-							<span>{book.title}</span>
-						</div>
-					</>
-				))}</section>
+					{books.map(book => (
+						<>
+							<div className={styles.book}>
+								<Document
+									file={book.data}
+									key={"book-" + book.id}
+								>
+									<Page
+										pageNumber={1}
+										renderTextLayer={false}
+										renderAnnotationLayer={false}
+										height={375}
+										width={234}
+									/>
+								</Document>
+								<span className={styles.title}>{book.title}</span>
+							</div>
+						</>
+					))}</section>
 			</DropZone>
 			{fileError && <div>{fileError}</div>}
+
 			<FileTrigger
 				acceptedFileTypes={["application/pdf"]}
 				onSelect={handleFileUpload}
 			>
-				<Button>+</Button>
+				<Button className={styles.addButton + " react-aria-Button"}><BiAddToQueue /></Button>
 			</FileTrigger>
 		</>
 	)

@@ -54,6 +54,7 @@ function Register() {
 			<img src={darkmode() ? bannerLogoDark : bannerLogoLight} id={styles.banner} />
 
 			<TextField
+				className={styles.textField}
 				name="username"
 				minLength={3}
 				maxLength={50}
@@ -62,11 +63,13 @@ function Register() {
 				onChange={newVal => setValues({ ...values, username: newVal })}
 				isRequired
 			>
-				<Input placeholder="Username" />
+				<Input
+					placeholder="Username" />
 				<FieldError />
 			</TextField>
 
 			<TextField
+				className={styles.textField}
 				name="password"
 				type="password"
 				minLength={8}
@@ -75,11 +78,13 @@ function Register() {
 				onChange={newVal => setValues({ ...values, password: newVal })}
 				isRequired
 			>
-				<Input placeholder="Password" />
+				<Input
+					placeholder="Password" />
 				<FieldError />
 			</TextField>
 
 			<TextField
+				className={styles.textField}
 				name="confrimPassword"
 				type="password"
 				minLength={8}
@@ -89,7 +94,8 @@ function Register() {
 				onChange={newVal => setValues({ ...values, confirmPassword: newVal })}
 				isRequired
 			>
-				<Input placeholder="Confirm Password" />
+				<Input
+					placeholder="Confirm Password" />
 				<FieldError />
 			</TextField>
 

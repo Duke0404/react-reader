@@ -6,6 +6,11 @@
 	--text-color-1: black;
 }
 
+@property --brand-color {
+	syntax: "<color>";
+	initial-value: #8b66b9;
+}
+
 @media (prefers-color-scheme: dark) {
 	:root {
 		--bg-color-1: black;
@@ -78,6 +83,10 @@ body {
 	cursor: pointer;
 }
 
+.react-aria-Button:hover {
+	background-color: var(--brand-color);
+}
+
 .react-aria-Switch {
 	display: flex;
 	align-items: center;
@@ -125,4 +134,6 @@ body {
 .react-pdf__Document, .react-pdf__Page, .react-pdf__Page__canvas {
 	margin: 0;
 	border-radius: 15px;
+	overflow: hidden;
+	max-width: 100%;
 }

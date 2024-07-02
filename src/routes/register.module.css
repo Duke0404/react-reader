@@ -12,6 +12,12 @@
     width: 15rem
 }
 
+.textField {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 @media screen and (max-width: 768px) {
     #form {
         display: flex;
@@ -26,5 +32,9 @@
         flex-direction: column;
         align-items: center;
         gap: 1rem
+    }
+
+    .textField {
+        width: 70%
     }
 }
