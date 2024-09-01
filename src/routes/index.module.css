@@ -1,0 +1,21 @@
+.dashboard {
+    /* min-width: 100%;
+    min-height: 85vh; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.book {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;    
+}
+
+.cover {
+    border-radius: 5px;
+}

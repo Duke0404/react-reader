@@ -1,0 +1,30 @@
+#form {
+    width: 60%;
+    height: 100%;
+}
+
+.buttonDiv {
+    display: flex;
+    justify-content: space-between;
+}
+
+#banner {
+    width: 15rem
+}
+
+@media screen and (max-width: 768px) {
+    #form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%
+    }
+
+    .buttonDiv {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem
+    }
+}
