@@ -17,10 +17,9 @@ function Register() {
 
 	useEffect(() => {
 		if (checkRegistration()) {
-			navigate({to: "/"})
+			navigate({ to: "/" })
 		}
-	}
-	, [navigate])
+	}, [navigate])
 
 	const [values, setValues] = useState({
 		username: "",
@@ -51,7 +50,10 @@ function Register() {
 			id={styles.form}
 			onSubmit={handleSubmit}
 		>
-			<img src={darkmode() ? bannerLogoDark : bannerLogoLight} id={styles.banner} />
+			<img
+				src={darkmode() ? bannerLogoDark : bannerLogoLight}
+				id={styles.banner}
+			/>
 
 			<TextField
 				className={styles.textField}
@@ -63,8 +65,7 @@ function Register() {
 				onChange={newVal => setValues({ ...values, username: newVal })}
 				isRequired
 			>
-				<Input
-					placeholder="Username" />
+				<Input placeholder="Username" />
 				<FieldError />
 			</TextField>
 
@@ -78,8 +79,7 @@ function Register() {
 				onChange={newVal => setValues({ ...values, password: newVal })}
 				isRequired
 			>
-				<Input
-					placeholder="Password" />
+				<Input placeholder="Password" />
 				<FieldError />
 			</TextField>
 
@@ -94,8 +94,7 @@ function Register() {
 				onChange={newVal => setValues({ ...values, confirmPassword: newVal })}
 				isRequired
 			>
-				<Input
-					placeholder="Confirm Password" />
+				<Input placeholder="Confirm Password" />
 				<FieldError />
 			</TextField>
 

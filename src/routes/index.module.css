@@ -1,37 +1,45 @@
 .dashboard {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	flex-wrap: wrap;
 }
 
 .book {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 200px;
-    height: 300px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 200px;
+	height: 300px;
+}
+
+.document, .page, .page canvas {
+	overflow: hidden;
+	max-width: 100%;
+	display: flex;
+	align-items: center;
 }
 
 .cover {
-    border-radius: 5px;
+	overflow: hidden;
+	border-radius: 5px;
 }
 
 .title {
-    overflow: hidden;
-    text-align: center;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 80%;
+	overflow: hidden;
+	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 80%;
 }
 
 .addButton {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 1.5rem;
-    border-radius: 200px;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	padding: 1.5rem;
+	border-radius: 200px;
 }

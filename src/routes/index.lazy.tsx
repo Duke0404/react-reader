@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router"
+import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import checkRegistration from "../utils/checkRegistration"
 import { FileTrigger, DropZone, Button } from "react-aria-components"
 import { Document, Page } from "react-pdf"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db, Book } from "../db/db"
 import styles from "./index.module.css"
-import { BiAddToQueue } from "react-icons/bi";
+import { RiAddLargeLine } from "react-icons/ri"
 
 export const Route = createLazyFileRoute("/")({
 	component: Index
@@ -61,16 +61,22 @@ function Index() {
 
 	return (
 		<>
-			<DropZone >
+			<DropZone>
 				<section className={styles.dashboard}>
 					{books.map(book => (
 						<>
-							<div className={styles.book}>
+							<Link
+								className={styles.book}
+								to={"/" + book.id + "/1"}
+								key={"book-" + book.id}
+							>
 								<Document
+									className={styles.document}
 									file={book.data}
 									key={"book-" + book.id}
 								>
 									<Page
+										className={styles.page}
 										pageNumber={1}
 										renderTextLayer={false}
 										renderAnnotationLayer={false}
@@ -79,9 +85,10 @@ function Index() {
 									/>
 								</Document>
 								<span className={styles.title}>{book.title}</span>
-							</div>
+							</Link>
 						</>
-					))}</section>
+					))}
+				</section>
 			</DropZone>
 			{fileError && <div>{fileError}</div>}
 
@@ -89,7 +96,9 @@ function Index() {
 				acceptedFileTypes={["application/pdf"]}
 				onSelect={handleFileUpload}
 			>
-				<Button className={styles.addButton + " react-aria-Button"}><BiAddToQueue /></Button>
+				<Button className={styles.addButton + " react-aria-Button"}>
+					<RiAddLargeLine />
+				</Button>
 			</FileTrigger>
 		</>
 	)

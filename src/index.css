@@ -71,10 +71,10 @@ body {
 }
 
 .react-aria-Button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: min-content;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: min-content;
 	padding: 0.75rem 1.5rem;
 	border: none;
 	border-radius: 10rem;
@@ -90,13 +90,13 @@ body {
 .react-aria-Switch {
 	display: flex;
 	align-items: center;
-    cursor: pointer;
+	cursor: pointer;
 	gap: 0.5rem;
 
 	.indicator {
-        display: flex;
-        align-items: center;
-        padding: 0.1rem;
+		display: flex;
+		align-items: center;
+		padding: 0.1rem;
 		width: 2.25rem;
 		height: 1.4rem;
 		border: 2px solid var(--brand-color);
@@ -126,14 +126,13 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-    #root {
-        padding: 2rem;
-    }
+	#root {
+		padding: 2rem;
+	}
 }
 
-.react-pdf__Document, .react-pdf__Page, .react-pdf__Page__canvas {
-	margin: 0;
+.react-pdf__Document,
+.react-pdf__Page,
+.react-pdf__Page__canvas {
 	border-radius: 15px;
-	overflow: hidden;
-	max-width: 100%;
 }
