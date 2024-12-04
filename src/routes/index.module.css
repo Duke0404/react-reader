@@ -1,45 +1,46 @@
+.navbar {
+	display: flex;
+	width: 100%;
+	padding: 0 2rem 2rem;
+}
+
+.dropZone {
+	width: 100%;
+	min-height: 80vh;
+	height: fit-content;
+	border-radius: 15px;
+
+	&[data-focus-visible],
+	&[data-drop-target] {
+		outline: var(--text-color-2) solid 0.2rem;
+	}
+
+	&[data-drop-target] {
+		background-color: color(
+			from var(--bg-color-2) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+		);
+	}
+}
+
 .dashboard {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	gap: 20px;
+	gap: 2rem;
 	flex-wrap: wrap;
-}
-
-.book {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	width: 200px;
-	height: 300px;
-}
-
-.document, .page, .page canvas {
-	overflow: hidden;
-	max-width: 100%;
-	display: flex;
-	align-items: center;
-}
-
-.cover {
-	overflow: hidden;
-	border-radius: 5px;
-}
-
-.title {
-	overflow: hidden;
-	text-align: center;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	width: 80%;
 }
 
 .addButton {
 	position: fixed;
-	bottom: 20px;
-	right: 20px;
-	padding: 1.5rem;
-	border-radius: 200px;
+	bottom: 2rem;
+	right: 2rem;
+}
+
+@media screen and (max-width: 768px) {
+	.navbar {
+		flex-direction: column;
+		align-items: center;
+		padding: 2rem 0;
+	}
 }

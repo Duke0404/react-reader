@@ -2,10 +2,7 @@ import { useState, useEffect } from "react"
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router"
 import { FieldError, Form, Input, Label, Switch, TextField, Button } from "react-aria-components"
 import cryptoJS from "crypto-js"
-import bannerLogoLight from "../assets/banner-logo-light.svg"
-import bannerLogoDark from "../assets/banner-logo-dark.svg"
 import styles from "./register.module.css"
-import darkmode from "../utils/darkmode"
 import checkRegistration from "../utils/checkRegistration"
 
 export const Route = createLazyFileRoute("/register")({
@@ -50,11 +47,6 @@ function Register() {
 			id={styles.form}
 			onSubmit={handleSubmit}
 		>
-			<img
-				src={darkmode() ? bannerLogoDark : bannerLogoLight}
-				id={styles.banner}
-			/>
-
 			<TextField
 				className={styles.textField}
 				name="username"

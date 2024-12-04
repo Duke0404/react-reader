@@ -22,6 +22,14 @@ export default tseslint.config({
 		"linebreak-style": ["error", "unix"],
 		quotes: ["error", "double"],
 		semi: ["error", "never"],
-		"react/react-in-jsx-scope": "off"
+		"react/react-in-jsx-scope": "off",
+		"@typescript-eslint/no-unused-expressions": [
+			"error",
+			{
+				allowShortCircuit: true,
+				allowTernary: true,
+				allowTaggedTemplates: true
+			}
+		]
 	}
 })

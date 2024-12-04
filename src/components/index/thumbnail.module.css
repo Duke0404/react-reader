@@ -1,0 +1,114 @@
+.book {
+	display: flex;
+	flex-direction: column;
+	min-height: 375px;
+	width: 200px;
+}
+
+.cover {
+	width: 200px;
+	height: 300px;
+	overflow: hidden;
+	border-radius: 15px;
+	position: relative;
+	transition: ease-in-out 200ms;
+
+	&:hover, &:focus {
+		scale: 1.05;
+	}
+}
+
+.page canvas {
+	max-width: 100%;
+}
+
+.negativeButton, .negativeButton[data-pressed] {
+	background-color: var(--red-color);
+
+	&[data-hovered], &[data-focused] {
+		background-color: color(from var(--red-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+	}
+}
+
+.positiveButton, .positiveButton[data-pressed] {
+	background-color: var(--sky-color);
+
+	&[data-hovered], &[data-focused] {
+		background-color: color(from var(--sky-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+	}
+}
+
+.actionGroup {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.metadata {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	padding: 0.5rem;
+}
+.title {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.author {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 0.75rem;
+	color: var(--text-color-2);
+}
+
+.completionMeter {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: absolute;
+	width: 95%;
+	padding: 0.1rem;
+	bottom: 0;
+}
+
+.completionMeterBar {
+	display: flex;
+	align-items: center;
+	width: 70%;
+	border-radius: 5px;
+	outline: var(--text-color-2) solid 1px;
+	height: 0.5rem;
+}
+
+.completionMeterFill {
+	background: var(--brand-color);
+	border-radius: 5px;
+	background-color: var(--brand-color);
+	height: 100%;
+}
+
+.completionMeterValue {
+	font-size: 0.75rem;
+	color: var(--text-color-2);
+}
+
+.metaForm {
+	padding: 1rem;
+	position: relative;
+	height: 100%;
+}
+
+.metaActionGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}

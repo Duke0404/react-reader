@@ -1,14 +1,12 @@
 :root {
+	color-scheme: light dark;
 	--brand-color: #8b66b9;
 	--red-color: #f0646a;
+	--sky-color: #00d2fc;
 	--bg-color-1: white;
 	--bg-color-2: white;
 	--text-color-1: black;
-}
-
-@property --brand-color {
-	syntax: "<color>";
-	initial-value: #8b66b9;
+	--text-color-2: #333;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,6 +14,7 @@
 		--bg-color-1: black;
 		--bg-color-2: #222;
 		--text-color-1: white;
+		--text-color-2: #ddd;
 	}
 }
 
@@ -30,13 +29,17 @@ body {
 	color: var(--text-color-1);
 }
 
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
 #root {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	height: 100vh;
-	width: 100vw;
-	padding: 5rem;
+	min-height: 100vh;
+	padding: 4rem;
 	font-family: "Montserrat", sans-serif;
 }
 
@@ -57,11 +60,16 @@ body {
 	border: 2px solid #ccc;
 	border-radius: 0.5rem;
 	color: var(--text-color-1);
+
+	&[data-focused] {
+		outline: none;
+		border-bottom: 2px solid var(--brand-color);
+	}
 }
 
-.react-aria-Input:focus {
-	outline: none;
-	border-bottom: 2px solid var(--brand-color);
+.react-aria-Label {
+	font-size: 0.9rem;
+	padding: 0.1rem 0.25rem;
 }
 
 .react-aria-FieldError {
@@ -74,17 +82,30 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: min-content;
-	padding: 0.75rem 1.5rem;
+	padding: 1rem;
+	gap: 0.5rem;
 	border: none;
 	border-radius: 10rem;
 	background-color: var(--brand-color);
-	color: var(--text-color-1);
+	color: black;
 	cursor: pointer;
-}
+	transition: ease-in-out 200ms;
 
-.react-aria-Button:hover {
-	background-color: var(--brand-color);
+	&[data-hovered] {
+		background-color: color(from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+		scale: 1.05;
+	}
+
+	&[data-focused] {
+		background-color: color(from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+		scale: 1.05;
+		outline: none;
+	}
+
+	&[data-pressed] {
+		background-color: var(--brand-color);
+		scale: 0.95;
+	}
 }
 
 .react-aria-Switch {
@@ -129,10 +150,4 @@ body {
 	#root {
 		padding: 2rem;
 	}
-}
-
-.react-pdf__Document,
-.react-pdf__Page,
-.react-pdf__Page__canvas {
-	border-radius: 15px;
 }
