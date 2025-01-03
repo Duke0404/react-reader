@@ -1,0 +1,27 @@
+.read-progress {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 0.5rem;
+	height: 1rem;
+}
+
+.meter {
+	height: 0.7rem;
+	width: 70%;
+	border-radius: 5px;
+	border: #ccc solid 2px;
+	padding: 1px;
+	background-color: var(--bg-color-2);
+}
+
+.fill {
+	border-radius: 5px;
+	background-color: var(--brand-color);
+	height: 100%;
+}
+
+.value {
+	font-size: 0.75rem;
+	color: var(--text-color-2);
+}

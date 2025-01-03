@@ -6,6 +6,7 @@ interface Book {
 	author?: string
 	currentPage: number
 	totalPages: number
+	cover?: Blob
 	data: Blob
 }
 

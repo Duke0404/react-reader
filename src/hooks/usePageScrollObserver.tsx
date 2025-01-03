@@ -25,7 +25,8 @@ export default function usePageScrollObserver(
 						intersectingEntries.length - 1
 					].target.getAttribute("data-page-number") as string)
 					navigate({
-						to: `/${bookId}/${pageNumber}`
+						to: `/${bookId}/${pageNumber}`,
+						replace: true
 					})
 				}
 			},

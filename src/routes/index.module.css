@@ -4,10 +4,11 @@
 	padding: 0 2rem 2rem;
 }
 
-.dropZone {
+.drop-area {
 	width: 100%;
-	min-height: 80vh;
-	height: fit-content;
+	height: 80vh;
+	position: fixed;
+	z-index: -1;
 	border-radius: 15px;
 
 	&[data-focus-visible],

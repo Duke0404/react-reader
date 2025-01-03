@@ -18,7 +18,7 @@ import { Route as rootRoute } from './routes/__root'
 
 const RegisterLazyImport = createFileRoute('/register')()
 const IndexLazyImport = createFileRoute('/')()
-const BookIdPageLazyImport = createFileRoute('/$bookId/$page')()
+const BookIdCurrPageLazyImport = createFileRoute('/$bookId/$currPage')()
 
 // Create/Update Routes
 
@@ -32,10 +32,12 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const BookIdPageLazyRoute = BookIdPageLazyImport.update({
-  path: '/$bookId/$page',
+const BookIdCurrPageLazyRoute = BookIdCurrPageLazyImport.update({
+  path: '/$bookId/$currPage',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/$bookId.$page.lazy').then((d) => d.Route))
+} as any).lazy(() =>
+  import('./routes/$bookId.$currPage.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -55,11 +57,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterLazyImport
       parentRoute: typeof rootRoute
     }
-    '/$bookId/$page': {
-      id: '/$bookId/$page'
-      path: '/$bookId/$page'
-      fullPath: '/$bookId/$page'
-      preLoaderRoute: typeof BookIdPageLazyImport
+    '/$bookId/$currPage': {
+      id: '/$bookId/$currPage'
+      path: '/$bookId/$currPage'
+      fullPath: '/$bookId/$currPage'
+      preLoaderRoute: typeof BookIdCurrPageLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -70,7 +72,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   RegisterLazyRoute,
-  BookIdPageLazyRoute,
+  BookIdCurrPageLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -83,7 +85,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/register",
-        "/$bookId/$page"
+        "/$bookId/$currPage"
       ]
     },
     "/": {
@@ -92,8 +94,8 @@ export const routeTree = rootRoute.addChildren({
     "/register": {
       "filePath": "register.lazy.tsx"
     },
-    "/$bookId/$page": {
-      "filePath": "$bookId.$page.lazy.tsx"
+    "/$bookId/$currPage": {
+      "filePath": "$bookId.$currPage.lazy.tsx"
     }
   }
 }

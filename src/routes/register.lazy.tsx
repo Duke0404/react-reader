@@ -4,6 +4,9 @@ import { FieldError, Form, Input, Label, Switch, TextField, Button } from "react
 import cryptoJS from "crypto-js"
 import styles from "./register.module.css"
 import checkRegistration from "../utils/checkRegistration"
+import bannerLogoLight from "../assets/banner-logo-light.svg"
+import bannerLogoDark from "../assets/banner-logo-dark.svg"
+import darkmode from "../utils/darkmode"
 
 export const Route = createLazyFileRoute("/register")({
 	component: Register
@@ -47,6 +50,11 @@ function Register() {
 			id={styles.form}
 			onSubmit={handleSubmit}
 		>
+			<img
+				src={darkmode() ? bannerLogoDark : bannerLogoLight}
+				id={styles.banner}
+			/>
+
 			<TextField
 				className={styles.textField}
 				name="username"
