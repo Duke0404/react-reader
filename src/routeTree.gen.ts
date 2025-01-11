@@ -17,8 +17,11 @@ import { Route as rootRoute } from './routes/__root'
 // Create Virtual Routes
 
 const RegisterLazyImport = createFileRoute('/register')()
+const R404LazyImport = createFileRoute('/404')()
 const IndexLazyImport = createFileRoute('/')()
-const BookIdCurrPageLazyImport = createFileRoute('/$bookId/$currPage')()
+const BookIdParamCurrPageParamLazyImport = createFileRoute(
+  '/$bookIdParam/$currPageParam',
+)()
 
 // Create/Update Routes
 
@@ -27,17 +30,23 @@ const RegisterLazyRoute = RegisterLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/register.lazy').then((d) => d.Route))
 
+const R404LazyRoute = R404LazyImport.update({
+  path: '/404',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/404.lazy').then((d) => d.Route))
+
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const BookIdCurrPageLazyRoute = BookIdCurrPageLazyImport.update({
-  path: '/$bookId/$currPage',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/$bookId.$currPage.lazy').then((d) => d.Route),
-)
+const BookIdParamCurrPageParamLazyRoute =
+  BookIdParamCurrPageParamLazyImport.update({
+    path: '/$bookIdParam/$currPageParam',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/$bookIdParam.$currPageParam.lazy').then((d) => d.Route),
+  )
 
 // Populate the FileRoutesByPath interface
 
@@ -50,6 +59,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404LazyImport
+      parentRoute: typeof rootRoute
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -57,11 +73,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterLazyImport
       parentRoute: typeof rootRoute
     }
-    '/$bookId/$currPage': {
-      id: '/$bookId/$currPage'
-      path: '/$bookId/$currPage'
-      fullPath: '/$bookId/$currPage'
-      preLoaderRoute: typeof BookIdCurrPageLazyImport
+    '/$bookIdParam/$currPageParam': {
+      id: '/$bookIdParam/$currPageParam'
+      path: '/$bookIdParam/$currPageParam'
+      fullPath: '/$bookIdParam/$currPageParam'
+      preLoaderRoute: typeof BookIdParamCurrPageParamLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -71,8 +87,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
+  R404LazyRoute,
   RegisterLazyRoute,
-  BookIdCurrPageLazyRoute,
+  BookIdParamCurrPageParamLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -84,18 +101,22 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/404",
         "/register",
-        "/$bookId/$currPage"
+        "/$bookIdParam/$currPageParam"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
+    "/404": {
+      "filePath": "404.lazy.tsx"
+    },
     "/register": {
       "filePath": "register.lazy.tsx"
     },
-    "/$bookId/$currPage": {
-      "filePath": "$bookId.$currPage.lazy.tsx"
+    "/$bookIdParam/$currPageParam": {
+      "filePath": "$bookIdParam.$currPageParam.lazy.tsx"
     }
   }
 }

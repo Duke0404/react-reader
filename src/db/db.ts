@@ -8,6 +8,7 @@ interface Book {
 	totalPages: number
 	cover?: Blob
 	data: Blob
+	lastReadPage: number
 }
 
 const db = new Dexie("FriendsDatabase") as Dexie & {
@@ -19,7 +20,7 @@ const db = new Dexie("FriendsDatabase") as Dexie & {
 
 // Schema declaration:
 db.version(1).stores({
-	books: "++id, title, data" // primary key "id" (for the runtime!)
+	books: "++id, title, author, currentPage, totalPages, cover, data, lastReadPage" // primary key "id" (for the runtime!)
 })
 
 export type { Book }

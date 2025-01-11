@@ -1,7 +1,7 @@
-import { Link } from "@tanstack/react-router"
-import { Document, Page } from "react-pdf"
+import { Link, useNavigate } from "@tanstack/react-router"
+import { Document, Thumbnail } from "react-pdf"
 import { Book } from "../../db/db"
-import styles from "./thumbnail.module.css"
+import styles from "./thumb.module.css"
 import { Button } from "react-aria-components"
 import { MdOutlineDeleteForever, MdOutlineEdit, MdClose } from "react-icons/md"
 import { useState } from "react"
@@ -15,7 +15,9 @@ interface props {
 	handleSave: (book: Book) => void
 }
 
-export default function Thumbnail({ book, handleDelete, handleSave }: props) {
+export default function Thumb({ book, handleDelete, handleSave }: props) {
+	const navigate = useNavigate()
+
 	const [hover, setHover] = useState(false)
 	const [metaEdit, setMetaEdit] = useState(false)
 
@@ -68,26 +70,26 @@ export default function Thumbnail({ book, handleDelete, handleSave }: props) {
 			) : (
 				<div className={styles.book}>
 					<div className={styles["cover"]}>
-						<Link to={"/" + book.id + "/1"}>
-							{cover ? (
+						{cover ? (
+							<Link to={"/" + book.id + "/1"}>
 								<img
 									src={URL.createObjectURL(cover)}
 									className={styles["image"]}
 									alt={title + " book cover"}
 								/>
-							) : (
-								<Document file={book.data}>
-									<Page
-										className={styles.page}
-										pageNumber={1}
-										renderTextLayer={false}
-										renderAnnotationLayer={false}
-										height={375}
-										width={234}
-									/>
-								</Document>
-							)}
-						</Link>
+							</Link>
+						) : (
+							<Document file={book.data}>
+								<Thumbnail
+									className={styles.page}
+									pageNumber={1}
+									height={375}
+									width={234}
+									onItemClick={() => navigate({ to: "/" + book.id + "/1" })}
+								/>
+							</Document>
+						)}
+
 						{confirmDelete ? (
 							<div className={styles.actionGroup}>
 								<Button
