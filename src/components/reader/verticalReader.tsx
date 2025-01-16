@@ -1,0 +1,158 @@
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Document, Page } from "react-pdf"
+
+import { useNavigate } from "@tanstack/react-router"
+
+import useVisiblePages from "../../hooks/useVisiblePages"
+import { ReadingDirection } from "../../types/readingDirection"
+import ActionBar from "./actionBar"
+import PagePlaceholder from "./pagePlaceholder"
+import styles from "./reader.module.css"
+// import { PageCallback } from "react-pdf/src/shared/types.js"
+
+
+
+export interface props {
+	bookId: number
+	initPage: number
+	totalPages: number
+	bookData: Blob
+	// handlePageRender: (page: PageCallback) => Promise<void>
+	toggleDirection: () => void
+}
+
+// Number of pages to load before and after the current page
+const PAGE_BUFFER = 5
+
+export default function VerticalReader({
+	bookId,
+	initPage,
+	totalPages,
+	bookData,
+	// handlePageRender,
+	toggleDirection
+}: props) {
+	const [currPage, setCurrPage] = useState(initPage)
+	const [tillPage, setTillPage] = useState(initPage)
+
+	const [visitedPageRange, setVisitedPageRange] = useState(new Set([currPage, 1]))
+
+	const [pageDimensions, setPageDimensions] = useState<{ width: number; height: number }>({
+		width: 0,
+		height: 0
+	})
+
+	// get page dimensions of the first page to be used in placehoders
+	const [firstPageLoaded, setFirstPageLoaded] = useState(false)
+	const handleFirstPageLoad = useCallback(
+		({ width, height }: { width: number; height: number }) => {
+			setPageDimensions({ width, height })
+			setFirstPageLoaded(true)
+		},
+		[]
+	)
+
+	// References to each page
+	const pageRefs = useRef<(HTMLDivElement | null)[]>([])
+	// Check if all refs are populated
+	const [allRefsPopulated, setAllRefsPopulated] = useState(false)
+	useEffect(() => {
+		if (pageRefs.current.length === totalPages) setAllRefsPopulated(true)
+	}, [pageRefs.current.length, totalPages])
+
+	const isFirstRender = useRef(true)
+
+	// Scroll to the initial page on first render
+	useEffect(() => {
+		if (isFirstRender.current && allRefsPopulated) {
+			pageRefs.current[initPage - 1]?.scrollIntoView({ behavior: "instant", block: "start" })
+			isFirstRender.current = false
+		}
+	}, [initPage, allRefsPopulated])
+
+	const navigate = useNavigate()
+
+	// Hook to track visible pages and update range
+	useVisiblePages(pageRefs, (firstVisible, lastVisible) => {
+		currPage !== firstVisible && setCurrPage(firstVisible)
+		tillPage !== lastVisible && setTillPage(lastVisible)
+		if (!isFirstRender.current) navigate({ to: `/${bookId}/${firstVisible}`, replace: true })
+
+		// Calculate the range including buffer
+		const newStart = Math.max(1, firstVisible - PAGE_BUFFER)
+		const newEnd = Math.min(totalPages, lastVisible + PAGE_BUFFER)
+
+		// Update visited pages
+		const newVisitedPages: number[] = []
+		for (let i = newStart; i <= newEnd; i++) {
+			newVisitedPages.push(i)
+		}
+
+		setVisitedPageRange(vp => {
+			const t = new Set([...vp, ...newVisitedPages])
+			return t
+		})
+	})
+
+	const shouldRenderPage = useCallback(
+		(pageNum: number) => visitedPageRange.has(pageNum),
+		[visitedPageRange]
+	)
+
+	function handleDeltaPage(delta: number) {
+		pageRefs.current[currPage + delta - 1]?.scrollIntoView({
+			behavior: "smooth",
+			block: "start"
+		})
+	}
+
+	return (
+		<>
+			<Document
+				className={styles["document"]}
+				file={bookData}
+			>
+				{Array.from({ length: totalPages }, (_, i) => {
+					const pageNum = i + 1
+					return shouldRenderPage(pageNum) ? (
+						<Page
+							key={i}
+							pageNumber={pageNum}
+							className={styles["page"]}
+							inputRef={ref => (pageRefs.current[i] = ref)}
+							onLoadSuccess={pageNum === 1 ? handleFirstPageLoad : undefined}
+							data-page-number={pageNum}
+							loading={
+								<PagePlaceholder
+									key={i}
+									width={pageDimensions.width}
+									height={pageDimensions.height}
+									pageNumber={pageNum}
+									ref={ref => (pageRefs.current[i] = ref)}
+								/>
+							}
+							// onRenderSuccess={handlePageRender}
+						/>
+					) : (
+						firstPageLoaded && (
+							<PagePlaceholder
+								key={i}
+								width={pageDimensions.width}
+								height={pageDimensions.height}
+								pageNumber={pageNum}
+								ref={ref => (pageRefs.current[i] = ref)}
+							/>
+						)
+					)
+				})}
+			</Document>
+			<ActionBar
+				currPages={[currPage, tillPage]}
+				totalPage={totalPages}
+				direction={ReadingDirection.vertical}
+				toggleDirection={toggleDirection}
+				handleDeltaPage={handleDeltaPage}
+			/>
+		</>
+	)
+}
