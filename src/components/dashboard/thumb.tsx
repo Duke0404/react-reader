@@ -2,12 +2,13 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import { Document, Thumbnail } from "react-pdf"
 import { Book } from "../../db/db"
 import styles from "./thumb.module.css"
-import { Button } from "react-aria-components"
-import { MdOutlineDeleteForever, MdOutlineEdit, MdClose } from "react-icons/md"
+import { Button, DialogTrigger } from "react-aria-components"
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md"
 import { useState } from "react"
 import MetadataEditor from "./metadataEditor"
 import { ProgressInfoType } from "../../types/progressInfoType"
 import ReadProgress from "./readProgress"
+import DeleteConfirmation from "./deleteConfirmation"
 
 interface props {
 	book: Book
@@ -56,7 +57,7 @@ export default function Thumb({ book, handleDelete, handleSave }: props) {
 				setHover(false)
 			}}
 		>
-			{metaEdit ? (
+			{/* {metaEdit ? (
 				<MetadataEditor
 					title={title}
 					setTitle={setTitle}
@@ -67,82 +68,82 @@ export default function Thumb({ book, handleDelete, handleSave }: props) {
 					cancelMetaEdit={cancelMetaEdit}
 					saveMetaEdit={saveMetaEdit}
 				/>
-			) : (
-				<div className={styles.book}>
-					<div className={styles["cover"]}>
-						{cover ? (
-							<Link to={"/" + book.id + "/1"}>
-								<img
-									src={URL.createObjectURL(cover)}
-									className={styles["image"]}
-									alt={title + " book cover"}
-								/>
-							</Link>
-						) : (
-							<Document file={book.data}>
-								<Thumbnail
-									className={styles.page}
-									pageNumber={1}
-									height={375}
-									width={234}
-									onItemClick={() => navigate({ to: "/" + book.id + "/1" })}
-								/>
-							</Document>
-						)}
-
-						{confirmDelete ? (
-							<div className={styles.actionGroup}>
-								<Button
-									onPress={() => handleDelete(book.id)}
-									className="red-button react-aria-Button"
-								>
-									<MdOutlineDeleteForever />
-									<span>Yes, Delete</span>
-								</Button>
-								<Button
-									onPress={() => setConfirmDelete(false)}
-									className="green-button react-aria-Button"
-								>
-									<MdClose />
-									<span>No, don't delete</span>
-								</Button>
-							</div>
-						) : hover ? (
-							<div className={styles.actionGroup}>
+			) : ( */}
+			<div className={styles.book}>
+				<div className={styles["cover"]}>
+					{cover ? (
+						<Link to={"/" + book.id + "/1"}>
+							<img
+								src={URL.createObjectURL(cover)}
+								className={styles["image"]}
+								alt={title + " book cover"}
+							/>
+						</Link>
+					) : (
+						<Document file={book.data}>
+							<Thumbnail
+								className={styles.page}
+								pageNumber={1}
+								height={375}
+								width={234}
+								onItemClick={() => navigate({ to: "/" + book.id + "/1" })}
+							/>
+						</Document>
+					)}
+					{(hover || confirmDelete || metaEdit) && (
+						<div className={styles["action-group"]}>
+							<DialogTrigger>
 								<Button
 									onPress={() => setConfirmDelete(true)}
 									className="red-button react-aria-Button"
 								>
 									<MdOutlineDeleteForever />
-									<span>Delete</span>
 								</Button>
-								<Button onPress={() => setMetaEdit(me => !me)}>
+								<DeleteConfirmation
+									title={book.title}
+									handleDelete={() => handleDelete(book.id)}
+									remove={() => {
+										setConfirmDelete(false)
+										setHover(false)
+									}}
+								/>
+							</DialogTrigger>
+							<DialogTrigger>
+								<Button onPress={() => setMetaEdit(true)}>
 									<MdOutlineEdit />
-									<span>Edit</span>
 								</Button>
-							</div>
-						) : (
-							""
-						)}
-					</div>
-
-					<div className={styles["meta-section"]}>
-						<div className={styles["meta-text"]}>
-							<span className={styles.title}>
-								<Link to={"/" + book.id + "/1"}>{title}</Link>
-							</span>
-
-							{author && <span className={styles.author}>{author}</span>}
+								<MetadataEditor
+									title={title}
+									setTitle={setTitle}
+									author={author}
+									setAuthor={setAuthor}
+									cover={cover}
+									setCover={setCover}
+									cancelMetaEdit={cancelMetaEdit}
+									saveMetaEdit={saveMetaEdit}
+								/>
+							</DialogTrigger>
 						</div>
-
-						<ReadProgress
-							currentPage={book.currentPage}
-							totalPages={book.totalPages}
-							progressInfoType={progressInfoType}
-						/>
-					</div>
+					)}
 				</div>
-			)}
+
+				<div className={styles["meta-section"]}>
+					<div className={styles["meta-text"]}>
+						<span className={styles.title}>
+							<Link to={"/" + book.id + "/1"}>{title}</Link>
+						</span>
+
+						{author && <span className={styles.author}>{author}</span>}
+					</div>
+
+					<ReadProgress
+						currentPage={book.currentPage}
+						totalPages={book.totalPages}
+						progressInfoType={progressInfoType}
+					/>
+				</div>
+			</div>
+			{/* )} */}
 		</div>
 	)
 }

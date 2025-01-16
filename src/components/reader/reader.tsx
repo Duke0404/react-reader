@@ -1,13 +1,16 @@
-import { useState, useRef, useCallback, useEffect } from "react"
-import { useNavigate } from "@tanstack/react-router"
+import { Book, db } from "../../db/db"
 import { Document, Page } from "react-pdf"
-import { useLiveQuery } from "dexie-react-hooks"
-import { db, Book } from "../../db/db"
-import { ReadingDirection } from "../../types/readingDirection"
-import useVisiblePages from "../../hooks/useVisiblePages"
-import styles from "./reader.module.css"
-import PagePlaceholder from "./pagePlaceholder"
+import { useCallback, useEffect, useRef, useState } from "react"
+
 import ActionBar from "./actionBar"
+import { PageCallback } from "react-pdf/src/shared/types.ts"
+import PagePlaceholder from "./pagePlaceholder"
+import { ReadingDirection } from "../../types/readingDirection"
+import { TextContent } from "pdfjs-dist/types/src/display/api"
+import styles from "./reader.module.css"
+import { useLiveQuery } from "dexie-react-hooks"
+import { useNavigate } from "@tanstack/react-router"
+import useVisiblePages from "../../hooks/useVisiblePages"
 
 // Number of pages to load before and after the current page
 const PAGE_BUFFER = 5
@@ -122,8 +125,81 @@ export default function Reader({ bookId, initPage }: props) {
 			})
 		else {
 			setCurrPage(location)
-			navigate({ to: `/${bookId}/${location}`, replace: true})
+			navigate({ to: `/${bookId}/${location}`, replace: true })
 		}
+	}
+
+	const renderTextWithBold = (
+		textContent: TextContent,
+		context: CanvasRenderingContext2D,
+		scaleX: number,
+		scaleY: number
+	) => {
+		textContent.items.forEach(item => {
+			if (!("str" in item && "fontName" in item && "transform" in item)) return
+
+			const text = item.str
+			const font = item.fontName
+			const fontSize = Math.abs(item.transform[3]) * scaleY
+
+			// Use raw transform values - they're already scaled
+			const offsetX = item.transform[4] * scaleX
+			// Adjust Y calculation to match PDF coordinates more precisely
+			const offsetY = (pageDimensions.height - item.transform[5]) * scaleY
+
+			const words = text.split(" ")
+			let currentX = offsetX
+
+			words.forEach(word => {
+				if (word.length > 2) {
+					context.font = `bold ${fontSize}px ${font}`
+					context.fillText(word.slice(0, 2), currentX, offsetY)
+
+					context.font = `${fontSize}px ${font}`
+					const boldWidth = context.measureText(word.slice(0, 2)).width
+					context.fillText(word.slice(2), currentX + boldWidth, offsetY)
+
+					currentX += context.measureText(word).width + context.measureText(" ").width
+				} else {
+					context.font = `${fontSize}px ${font}`
+					context.fillText(word, currentX, offsetY)
+					currentX += context.measureText(word).width + context.measureText(" ").width
+				}
+			})
+		})
+	}
+
+	async function onRender(page: PageCallback) {
+		// if (!pdf) return
+
+		// // Retrieve this page
+		// pdf.getPage(8)
+
+		// const page = await pdf.getPage(8)
+
+		const canvas = pageRefs.current[page._pageIndex]?.querySelector("canvas")
+		if (!canvas) return
+
+		const context = canvas.getContext("2d")
+
+		const scaleX = canvas.width / pageDimensions.width
+		const scaleY = canvas.height / pageDimensions.height
+
+		if (!context) return
+
+		// Retrieve text content from PDF page
+		const textContent = await page.getTextContent()
+
+		// Clear the canvas before rendering the text
+		// context.clearRect(0, 0, canvas.width, canvas.height)
+
+		// Render the text with the bold modifications
+		renderTextWithBold(textContent, context, scaleX, scaleY)
+
+		// page.getTextContent().then(textContent => {
+		// 	// Render the text with the bold modifications
+		// 	renderTextWithBold(textContent, context)
+		// })
 	}
 
 	return (
@@ -162,6 +238,7 @@ export default function Reader({ bookId, initPage }: props) {
 													ref={ref => (pageRefs.current[i] = ref)}
 												/>
 											}
+											onRenderSuccess={onRender}
 										/>
 									) : (
 										firstPageLoaded && (

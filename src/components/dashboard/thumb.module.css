@@ -29,13 +29,14 @@
 	max-width: 100%;
 }
 
-.actionGroup {
+.action-group {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
 	padding: 1rem;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	justify-content: space-between;
 	gap: 0.5rem;
 }
 

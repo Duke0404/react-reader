@@ -91,16 +91,25 @@ a {
 	border-radius: 10rem;
 	background-color: var(--brand-color);
 	color: black;
+	font-size: 1.2rem;
 	cursor: pointer;
 	transition: ease-in-out 200ms;
 
+	& span {
+		font-size: 1rem;
+	}
+
 	&[data-hovered] {
-		background-color: color(from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+		background-color: color(
+			from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+		);
 		scale: 1.05;
 	}
 
 	&[data-focused] {
-		background-color: color(from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+		background-color: color(
+			from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+		);
 		scale: 1.05;
 		outline: none;
 	}
@@ -149,27 +158,43 @@ a {
 	}
 }
 
-.red-button, .red-button[data-pressed] {
+.red-button,
+.red-button[data-pressed] {
 	background-color: var(--red-color);
 
-	&[data-hovered], &[data-focused] {
-		background-color: color(from var(--red-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+	&[data-hovered],
+	&[data-focused] {
+		background-color: color(
+			from var(--red-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+		);
 	}
 }
 
-.blue-button, .blue-button[data-pressed] {
+.red-text {
+	color: var(--red-color);
+}
+
+.blue-button,
+.blue-button[data-pressed] {
 	background-color: var(--sky-color);
 
-	&[data-hovered], &[data-focused] {
-		background-color: color(from var(--sky-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+	&[data-hovered],
+	&[data-focused] {
+		background-color: color(
+			from var(--sky-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+		);
 	}
 }
 
-.green-button, .green-button[data-pressed] {
+.green-button,
+.green-button[data-pressed] {
 	background-color: var(--green-color);
 
-	&[data-hovered], &[data-focused] {
-		background-color: color(from var(--sky-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1));
+	&[data-hovered],
+	&[data-focused] {
+		background-color: color(
+			from var(--sky-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+		);
 	}
 }
 

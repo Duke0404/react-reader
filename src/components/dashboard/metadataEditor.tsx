@@ -1,12 +1,16 @@
 import {
 	Button,
-	TextField,
 	Form,
+	TextField,
 	Input,
 	Label,
 	FieldError,
 	DropZone,
-	FileTrigger
+	FileTrigger,
+	ModalOverlay,
+	Modal,
+	Dialog,
+	Heading
 } from "react-aria-components"
 import { MdAdd, MdClose, MdOutlineImage, MdOutlineSave } from "react-icons/md"
 import styles from "./metadataEditor.module.css"
@@ -51,64 +55,82 @@ export default function MetadataEditor({
 	}
 
 	return (
-		<Form className={styles["form"]}>
-			<TextField
-				name="book-title"
-				maxLength={30}
-				onInput={e => setTitle(e.currentTarget.value)}
-				value={title}
-			>
-				<Label>Title</Label>
-				<Input />
-				<FieldError />
-			</TextField>
-			<TextField
-				name="book-author"
-				maxLength={30}
-				onInput={e => setAuthor(e.currentTarget.value || undefined)}
-				value={author}
-			>
-				<Label>Author</Label>
-				<Input />
-				<FieldError />
-			</TextField>
-			<DropZone className={styles["cover-drop"]}>
-				<FileTrigger
-					acceptedFileTypes={["image/png", "image/jpeg", "image/jpg", "image/webp"]}
-					onSelect={handleCoverUpload}
-				>
-					<Label>Cover</Label>
-					<Button className={styles["cover-change-button"]}>
-						{coverUploaded && cover ? (
-							<>
-								<MdOutlineImage />
-								<span>Cover image selected</span>
-							</>
-						) : (
-							<>
-								<MdAdd className={styles["cover-change-icon"]} />
-								<span>Change cover image</span>
-							</>
-						)}
-					</Button>
-				</FileTrigger>
-			</DropZone>
-			<div className={styles["button-group"]}>
-				<Button
-					onPress={cancelMetaEdit}
-					className="red-button react-aria-Button"
-				>
-					<MdClose />
-					<span>Cancel</span>
-				</Button>
-				<Button
-					onPress={saveMetaEdit}
-					className="blue-button react-aria-Button"
-				>
-					<MdOutlineSave />
-					<span>Save</span>
-				</Button>
-			</div>
-		</Form>
+		<ModalOverlay className={styles["overlay"]}>
+			<Modal className={styles["modal"]}>
+				<Dialog className={styles["dialog"]}>
+					{({ close }) => (
+						<>
+							<Heading>Edit Metadata</Heading>
+							<Form>
+								<TextField
+									name="book-title"
+									maxLength={30}
+									onInput={e => setTitle(e.currentTarget.value)}
+									value={title}
+								>
+									<Label>Title</Label>
+									<Input />
+									<FieldError />
+								</TextField>
+								<TextField
+									name="book-author"
+									maxLength={30}
+									onInput={e => setAuthor(e.currentTarget.value || undefined)}
+									value={author}
+								>
+									<Label>Author</Label>
+									<Input />
+									<FieldError />
+								</TextField>
+								<DropZone className={styles["cover-drop"]}>
+									<FileTrigger
+										acceptedFileTypes={[
+											"image/png",
+											"image/jpeg",
+											"image/jpg",
+											"image/webp"
+										]}
+										onSelect={handleCoverUpload}
+									>
+										<Label>Cover</Label>
+										<Button className={styles["cover-change-button"]}>
+											{coverUploaded && cover ? (
+												<>
+													<MdOutlineImage />
+													<span>Cover image selected</span>
+												</>
+											) : (
+												<>
+													<MdAdd
+														className={styles["cover-change-icon"]}
+													/>
+													<span>Change cover image</span>
+												</>
+											)}
+										</Button>
+									</FileTrigger>
+								</DropZone>
+								<div className={styles["action-group"]}>
+									<Button
+										onPress={cancelMetaEdit}
+										className="red-button react-aria-Button"
+									>
+										<MdClose />
+										<span>Cancel changes</span>
+									</Button>
+									<Button
+										onPress={saveMetaEdit}
+										className="blue-button react-aria-Button"
+									>
+										<MdOutlineSave />
+										<span>Save metadata</span>
+									</Button>
+								</div>
+							</Form>
+						</>
+					)}
+				</Dialog>
+			</Modal>
+		</ModalOverlay>
 	)
 }

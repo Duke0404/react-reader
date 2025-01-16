@@ -8,8 +8,8 @@ import styles from "./dashboard.module.css"
 import { MdAdd } from "react-icons/md"
 import Thumbnail from "./thumb"
 import { getDocument } from "pdfjs-dist"
-import bannerLogoLight from "../assets/banner-logo-light.svg"
-import bannerLogoDark from "../assets/banner-logo-dark.svg"
+import bannerLogoLight from "../../assets/banner-logo-light.svg"
+import bannerLogoDark from "../../assets/banner-logo-dark.svg"
 import darkmode from "../../utils/darkmode"
 import Placeholder from "./placeholder"
 
@@ -140,7 +140,6 @@ export default function Dashboard() {
 				>
 					<Button className={styles.addButton + " react-aria-Button"}>
 						<MdAdd />
-						<span>Add book</span>
 					</Button>
 				</FileTrigger>
 			</div>
