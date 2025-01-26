@@ -28,13 +28,13 @@
 }
 
 body {
+	all: unset;
 	background-color: var(--bg-color-1);
 	color: var(--text-color-1);
 }
 
 a {
-	text-decoration: none;
-	color: inherit;
+	all: unset;
 }
 
 #root {
@@ -42,7 +42,7 @@ a {
 	flex-direction: column;
 	align-items: center;
 	min-height: 100vh;
-	padding: 4rem;
+	padding: 2rem;
 	font-family: "Montserrat", sans-serif;
 }
 
@@ -133,7 +133,7 @@ a {
 		width: 2.25rem;
 		height: 1.4rem;
 		border: 2px solid var(--brand-color);
-		background: var(--bg-color-1);
+		background-color: var(--bg-color-1);
 		border-radius: 1rem;
 		transition: all 200ms;
 
@@ -143,7 +143,7 @@ a {
 			width: 70%;
 			height: 100%;
 			background: var(--brand-color);
-			border-radius: 16px;
+			border-radius: 1rem;
 			transition: all 200ms;
 		}
 	}
@@ -151,9 +151,75 @@ a {
 	&[data-selected] {
 		.indicator {
 			&:before {
-				background: var(--brand-color);
+				background-color: var(--brand-color);
 				transform: translateX(40%);
 			}
+		}
+	}
+}
+
+.react-aria-Slider {
+	display: grid;
+	grid-template-areas:
+		"label output"
+		"track track";
+	grid-template-columns: 1fr auto;
+
+	.react-aria-Label {
+		grid-area: label;
+	}
+
+	.react-aria-SliderOutput {
+		grid-area: output;
+	}
+
+	.react-aria-SliderTrack {
+		grid-area: track;
+		position: relative;
+
+		/* track line */
+		&:before {
+			content: "";
+			display: block;
+			position: absolute;
+			background-color: var(--text-color-2);
+			opacity: 0.6;
+			border-radius: 1rem;
+		}
+	}
+
+	.react-aria-SliderThumb {
+		width: calc(2.24rem - 2px);
+		height: calc(1.3rem - 2px);
+		border-radius: 1rem;
+		background-color: var(--brand-color);
+		forced-color-adjust: none;
+
+		&[data-dragging],
+		&[data-focus-visible] {
+			scale: 1.02;
+		}
+	}
+
+	&[data-orientation="horizontal"] {
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+
+		.react-aria-SliderTrack {
+			height: 30px;
+			width: 90%;
+
+			&:before {
+				height: 2px;
+				width: 100%;
+				top: 50%;
+				transform: translateY(-50%);
+			}
+		}
+
+		.react-aria-SliderThumb {
+			top: 50%;
 		}
 	}
 }

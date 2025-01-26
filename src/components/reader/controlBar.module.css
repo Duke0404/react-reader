@@ -1,0 +1,32 @@
+.bar {
+	position: fixed;
+	right: 2rem;
+	bottom: 2rem;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	z-index: 5;
+}
+
+.item {
+	background-color: var(--bg-color-2);
+	color: var(--text-color-2);
+	padding: 1rem;
+	box-shadow: 0 0 10px 0.1px var(--brand-color);
+	border-radius: 2rem;
+}
+
+.button-group {
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+	.bar {
+		top: 2rem;
+		bottom: auto;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+}

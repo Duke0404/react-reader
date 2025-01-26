@@ -1,6 +1,7 @@
-import { Dialog, Modal, Button, Heading, ModalOverlay } from "react-aria-components"
+import { Button, Dialog, Heading, Modal, ModalOverlay } from "react-aria-components"
+import { MdClose, MdOutlineDeleteForever } from "react-icons/md"
+
 import styles from "./deleteConfirmation.module.css"
-import { MdOutlineDeleteForever, MdClose } from "react-icons/md"
 
 interface props {
 	title: string
@@ -23,7 +24,7 @@ export default function DeleteConfirmation({ title, handleDelete, remove }: prop
 							</Heading>
 
                             <p>
-                                Are you sure you want to permanently delete this book? Corresponding bookmarks and saved preferences will also be removed.
+                                Are you sure you want to permanently delete this book, its bookmarks and saved preferences?
                             </p>
 
 							<div className={styles["action-group"]}>

@@ -15,7 +15,7 @@
 	box-shadow: 0 0 10px 0.1px var(--brand-color);
 
 	&:hover, &:focus {
-		scale: 1.05;
+		scale: 1.02;
 	}
 }
 

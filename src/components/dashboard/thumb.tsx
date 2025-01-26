@@ -1,14 +1,16 @@
-import { Link, useNavigate } from "@tanstack/react-router"
-import { Document, Thumbnail } from "react-pdf"
-import { Book } from "../../db/db"
-import styles from "./thumb.module.css"
+import { useState } from "react"
 import { Button, DialogTrigger } from "react-aria-components"
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md"
-import { useState } from "react"
-import MetadataEditor from "./metadataEditor"
+import { Document, Thumbnail } from "react-pdf"
+
+import { Link, useNavigate } from "@tanstack/react-router"
+
+import { Book } from "../../db/db"
 import { ProgressInfoType } from "../../types/progressInfoType"
-import ReadProgress from "./readProgress"
 import DeleteConfirmation from "./deleteConfirmation"
+import MetadataEditor from "./metadataEditor"
+import ReadProgress from "./readProgress"
+import styles from "./thumb.module.css"
 
 interface props {
 	book: Book

@@ -1,20 +1,21 @@
+import { useState } from "react"
 import {
 	Button,
+	Dialog,
+	DropZone,
+	FieldError,
+	FileTrigger,
 	Form,
-	TextField,
+	Heading,
 	Input,
 	Label,
-	FieldError,
-	DropZone,
-	FileTrigger,
-	ModalOverlay,
 	Modal,
-	Dialog,
-	Heading
+	ModalOverlay,
+	TextField
 } from "react-aria-components"
 import { MdAdd, MdClose, MdOutlineImage, MdOutlineSave } from "react-icons/md"
+
 import styles from "./metadataEditor.module.css"
-import { useState } from "react"
 
 interface props {
 	title: string
@@ -58,7 +59,7 @@ export default function MetadataEditor({
 		<ModalOverlay className={styles["overlay"]}>
 			<Modal className={styles["modal"]}>
 				<Dialog className={styles["dialog"]}>
-					{({ close }) => (
+					{
 						<>
 							<Heading>Edit Metadata</Heading>
 							<Form>
@@ -128,7 +129,7 @@ export default function MetadataEditor({
 								</div>
 							</Form>
 						</>
-					)}
+					}
 				</Dialog>
 			</Modal>
 		</ModalOverlay>

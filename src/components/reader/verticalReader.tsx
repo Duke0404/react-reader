@@ -1,24 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Document, Page } from "react-pdf"
+import { PageCallback } from "react-pdf/src/shared/types.js"
 
 import { useNavigate } from "@tanstack/react-router"
 
 import useVisiblePages from "../../hooks/useVisiblePages"
-import { ReadingDirection } from "../../types/readingDirection"
-import ActionBar from "./actionBar"
 import PagePlaceholder from "./pagePlaceholder"
 import styles from "./reader.module.css"
-// import { PageCallback } from "react-pdf/src/shared/types.js"
-
-
 
 export interface props {
 	bookId: number
+	bookData: Blob
 	initPage: number
 	totalPages: number
-	bookData: Blob
-	// handlePageRender: (page: PageCallback) => Promise<void>
-	toggleDirection: () => void
+	canvasMod?: (page: PageCallback, canvas: HTMLCanvasElement) => Promise<void>
+	ControlBar: React.FC<{
+		currPages: number[]
+		handleDeltaPage: (delta: number) => void
+	}>
 }
 
 // Number of pages to load before and after the current page
@@ -26,11 +25,11 @@ const PAGE_BUFFER = 5
 
 export default function VerticalReader({
 	bookId,
+	bookData,
 	initPage,
 	totalPages,
-	bookData,
-	// handlePageRender,
-	toggleDirection
+	canvasMod,
+	ControlBar
 }: props) {
 	const [currPage, setCurrPage] = useState(initPage)
 	const [tillPage, setTillPage] = useState(initPage)
@@ -131,7 +130,17 @@ export default function VerticalReader({
 									ref={ref => (pageRefs.current[i] = ref)}
 								/>
 							}
-							// onRenderSuccess={handlePageRender}
+							onRenderSuccess={
+								canvasMod
+									? page => {
+											const canvas =
+												pageRefs.current[page._pageIndex]?.querySelector(
+													"canvas"
+												)
+											if (canvas) canvasMod(page, canvas)
+										}
+									: undefined
+							}
 						/>
 					) : (
 						firstPageLoaded && (
@@ -146,11 +155,8 @@ export default function VerticalReader({
 					)
 				})}
 			</Document>
-			<ActionBar
+			<ControlBar
 				currPages={[currPage, tillPage]}
-				totalPage={totalPages}
-				direction={ReadingDirection.vertical}
-				toggleDirection={toggleDirection}
 				handleDeltaPage={handleDeltaPage}
 			/>
 		</>

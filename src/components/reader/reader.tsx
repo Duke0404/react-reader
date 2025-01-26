@@ -6,8 +6,13 @@ import { PageCallback } from "react-pdf/src/shared/types.ts"
 import { useNavigate } from "@tanstack/react-router"
 
 import { Book, db } from "../../db/db"
+import BionicSettings from "../../types/bionicSettings"
 import { ReadingDirection } from "../../types/readingDirection"
+import ActionBar from "./actionBar"
+import ControlBar from "./controlBar"
 import HorizontalReader from "./horizontalReader"
+import styles from "./reader.module.css"
+import SettingsPane from "./settingsPane"
 import VerticalReader from "./verticalReader"
 
 export interface props {
@@ -33,7 +38,16 @@ export default function Reader({ bookId, initPage }: props) {
 		ReadingDirection.vertical
 	)
 
-	const [bionicMode, setBionicMode] = useState(false)
+	const [bionicSettings, setBionicSettings] = useState<BionicSettings>({
+		on: false,
+		highlightSize: 3,
+		highlightJump: 1,
+		highlightMultiplier: 4,
+		lowlightOpacity: 0.6
+	})
+
+	const keyFromBionicSettings = (settings: BionicSettings) =>
+		`bionic-${settings.on}-${settings.highlightSize}-${settings.highlightJump}-${settings.highlightMultiplier}-${settings.lowlightOpacity}`
 
 	function renderTextWithBold(
 		textContent: TextContent,
@@ -57,21 +71,32 @@ export default function Reader({ bookId, initPage }: props) {
 			const words = text.split(" ")
 			let currentX = offsetX
 
-			words.forEach(word => {
-				if (word.length > 2) {
-					context.font = `bold ${fontSize}px ${font}`
-					context.fillText(word.slice(0, 2), currentX, offsetY)
-
-					context.font = `${fontSize}px ${font}`
-					const boldWidth = context.measureText(word.slice(0, 2)).width
-					context.fillText(word.slice(2), currentX + boldWidth, offsetY)
-
-					currentX += context.measureText(word).width + context.measureText(" ").width
-				} else {
-					context.font = `${fontSize}px ${font}`
+			words.forEach((word, i) => {
+				if (i % bionicSettings.highlightJump !== 0) {
+					context.font = `300 ${fontSize}px ${font}`
+					context.globalAlpha = bionicSettings.lowlightOpacity
 					context.fillText(word, currentX, offsetY)
+					context.globalAlpha = 1
 					currentX += context.measureText(word).width + context.measureText(" ").width
+					return
 				}
+
+				const threshold = Math.round((bionicSettings.highlightSize * word.length) / 6)
+
+				context.font = `700 ${fontSize}px ${font}`
+
+				for (let i = 0; i < bionicSettings.highlightMultiplier; i++) {
+					// Layer text for extra bold effect
+					context.fillText(word.slice(0, threshold), currentX, offsetY)
+				}
+
+				context.font = `300 ${fontSize}px ${font}`
+				const boldWidth = context.measureText(word.slice(0, threshold)).width + threshold / 2
+				context.globalAlpha = bionicSettings.lowlightOpacity
+				context.fillText(word.slice(threshold), currentX + boldWidth, offsetY)
+				context.globalAlpha = 1
+
+				currentX += context.measureText(word).width + context.measureText("  ").width
 			})
 		})
 	}
@@ -84,6 +109,26 @@ export default function Reader({ bookId, initPage }: props) {
 
 		if (!context) return
 
+		// Backup the original fillText method
+		const originalFillText = context.fillText
+
+		// Override fillText to skip rendering text
+		context.fillText = function () {
+			// Do nothing to skip original text rendering
+		}
+
+		const viewport = page.getViewport({ scale: scaleX })
+
+		// Adjust the canvas size to match the viewport
+		canvas.width = viewport.width
+		canvas.height = viewport.height
+
+		// Render the page background (images, lines, etc.)
+		await page.render({ canvasContext: context, viewport }).promise
+
+		// Restore the original fillText method
+		context.fillText = originalFillText
+
 		// Retrieve text content from PDF page
 		const textContent = await page.getTextContent()
 
@@ -91,29 +136,60 @@ export default function Reader({ bookId, initPage }: props) {
 		renderTextWithBold(textContent, context, scaleX, scaleY, page.height)
 	}
 
+	const ControlWrapper = ({
+		currPages,
+		handleDeltaPage
+	}: {
+		currPages: number[]
+		handleDeltaPage: (delta: number) => void
+	}) => (
+		<ControlBar
+			currPages={currPages}
+			totalPage={book?.totalPages || 0}
+			direction={direction}
+			toggleDirection={toggleDirection}
+			handleDeltaPage={handleDeltaPage}
+		/>
+	)
+
+	const [settingsOpen, toggleSettingsOpen] = useReducer(so => !so, false)
+
 	return (
 		<>
 			{book ? (
-				<>
-					{direction === ReadingDirection.horizontal ? (
-						<HorizontalReader
-							bookId={bookId}
-							initPage={initPage}
-							totalPages={book.totalPages}
-							bookData={book.data}
-							toggleDirection={toggleDirection}
-						/>
-					) : (
-						<VerticalReader
-							bookId={bookId}
-							initPage={initPage}
-							totalPages={book.totalPages}
-							bookData={book.data}
-							// handlePageRender={handlePageRender}
-							toggleDirection={toggleDirection}
+				<div className={styles["reader-wrapper"]}>
+					{settingsOpen && (
+						<SettingsPane
+							bionicSettings={bionicSettings}
+							setBionicSettings={setBionicSettings}
 						/>
 					)}
-				</>
+					<div className={styles["document-wrapper"]}>
+						{direction === ReadingDirection.horizontal ? (
+							<HorizontalReader
+								bookId={bookId}
+								bookData={book.data}
+								initPage={initPage}
+								totalPages={book.totalPages}
+								key={keyFromBionicSettings(bionicSettings)}
+								toggleDirection={toggleDirection}
+								canvasMod={bionicSettings.on ? bionic : undefined}
+								ControlBar={ControlWrapper}
+							/>
+						) : (
+							<VerticalReader
+								bookId={bookId}
+								bookData={book.data}
+								initPage={initPage}
+								totalPages={book.totalPages}
+								key={keyFromBionicSettings(bionicSettings)}
+								canvasMod={bionicSettings.on ? bionic : undefined}
+								ControlBar={ControlWrapper}
+							/>
+						)}
+					</div>
+					<ActionBar toggleSettings={toggleSettingsOpen} />
+				</div>
 			) : (
 				<p>Book not found</p>
 			)}

@@ -1,60 +1,24 @@
-import { Button } from "react-aria-components"
+import { Button, Link } from "react-aria-components"
+import { MdOutlineHome, MdOutlineSettings } from "react-icons/md"
+
 import styles from "./actionBar.module.css"
-import {
-	MdOutlineKeyboardDoubleArrowDown,
-	MdOutlineKeyboardDoubleArrowRight,
-	MdArrowBack,
-	MdArrowForward,
-	MdArrowUpward,
-	MdArrowDownward
-} from "react-icons/md"
-import { ReadingDirection } from "../../types/readingDirection"
 
 interface props {
-	currPages: number[]
-	totalPage: number
-	direction: ReadingDirection
-	toggleDirection: () => void
-	handleDeltaPage: (delta: number) => void
+	toggleSettings: VoidFunction
 }
 
-export default function ActionBar({
-	currPages,
-	totalPage,
-	direction,
-	toggleDirection,
-	handleDeltaPage
-}: props) {
+export default function ActionBar({ toggleSettings }: props) {
 	return (
 		<nav className={styles["bar"]}>
-			<div className={styles["item"]}>
-				{currPages[0] === currPages[1] || direction === ReadingDirection.horizontal
-					? currPages[0]
-					: currPages[0] + " - " + currPages[1]}
-				{" / " + totalPage}
-			</div>
-			<div className={styles["button-group"]}>
-				<Button onPress={() => handleDeltaPage(-1)}>
-					{direction === ReadingDirection.vertical ? <MdArrowUpward /> : <MdArrowBack />}
-				</Button>
-
-				<Button onPress={() => handleDeltaPage(1)}>
-					{direction === ReadingDirection.vertical ? (
-						<MdArrowDownward />
-					) : (
-						<MdArrowForward />
-					)}
-				</Button>
-			</div>
-			{direction === ReadingDirection.vertical ? (
-				<Button onPress={toggleDirection}>
-					<MdOutlineKeyboardDoubleArrowRight />
-				</Button>
-			) : (
-				<Button onPress={toggleDirection}>
-					<MdOutlineKeyboardDoubleArrowDown />
-				</Button>
-			)}
+			<Link
+				className="react-aria-Button"
+				href="/"
+			>
+				<MdOutlineHome />
+			</Link>
+			<Button onPress={toggleSettings}>
+				<MdOutlineSettings />
+			</Button>
 		</nav>
 	)
 }
