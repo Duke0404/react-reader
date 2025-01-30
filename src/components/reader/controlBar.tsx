@@ -8,7 +8,7 @@ import {
 	MdOutlineKeyboardDoubleArrowRight
 } from "react-icons/md"
 
-import { ReadingDirection } from "../../types/readingDirection"
+import { ReadingDirection } from "../../enums/readingDirection"
 import styles from "./controlBar.module.css"
 
 interface props {

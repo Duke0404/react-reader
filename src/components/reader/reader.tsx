@@ -6,8 +6,8 @@ import { PageCallback } from "react-pdf/src/shared/types.ts"
 import { useNavigate } from "@tanstack/react-router"
 
 import { Book, db } from "../../db/db"
-import BionicSettings from "../../types/bionicSettings"
-import { ReadingDirection } from "../../types/readingDirection"
+import BionicSettings from "../../enums/bionicSettings"
+import { ReadingDirection } from "../../enums/readingDirection"
 import ActionBar from "./actionBar"
 import ControlBar from "./controlBar"
 import HorizontalReader from "./horizontalReader"
@@ -135,6 +135,7 @@ export default function Reader({ bookId, initPage }: props) {
 		// Render the text with the bold modifications
 		renderTextWithBold(textContent, context, scaleX, scaleY, page.height)
 	}
+
 
 	const ControlWrapper = ({
 		currPages,

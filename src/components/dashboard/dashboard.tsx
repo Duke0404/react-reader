@@ -1,17 +1,25 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
-import checkRegistration from "../../utils/checkRegistration"
-import { FileTrigger, DropZone, Button } from "react-aria-components"
 import { useLiveQuery } from "dexie-react-hooks"
-import { db, Book } from "../../db/db"
-import styles from "./dashboard.module.css"
-import { MdAdd } from "react-icons/md"
-import Thumbnail from "./thumb"
 import { getDocument } from "pdfjs-dist"
-import bannerLogoLight from "../../assets/banner-logo-light.svg"
+import { useEffect, useState } from "react"
+import {
+	Button,
+	DropZone,
+	FileTrigger,
+	ToggleButton,
+	ToggleButtonGroup
+} from "react-aria-components"
+import { MdAdd } from "react-icons/md"
+
+import { useNavigate } from "@tanstack/react-router"
+
 import bannerLogoDark from "../../assets/banner-logo-dark.svg"
+import bannerLogoLight from "../../assets/banner-logo-light.svg"
+import { Book, db } from "../../db/db"
+import checkRegistration from "../../utils/checkRegistration"
 import darkmode from "../../utils/darkmode"
+import styles from "./dashboard.module.css"
 import Placeholder from "./placeholder"
+import Thumbnail from "./thumb"
 
 export default function Dashboard() {
 	const navigate = useNavigate()
@@ -26,9 +34,31 @@ export default function Dashboard() {
 	const [fileError, setFileError] = useState("")
 	const [books, setBooks] = useState<Book[]>([])
 
+	enum SortBy {
+		Title,
+		Author,
+		LastRead,
+		LastAdded
+	}
+
+	const [sortBy, setSortBy] = useState(SortBy.LastRead)
+
+	function sortBooks(a: Book, b: Book) {
+		switch (sortBy) {
+			case SortBy.Title:
+				return a.title.localeCompare(b.title)
+			case SortBy.Author:
+				return (a.author || "").localeCompare(b.author || "")
+			case SortBy.LastRead:
+				return b.lastReadTime - a.lastReadTime
+			case SortBy.LastAdded:
+				return b.addTime - a.addTime
+		}
+	}
+
 	// Fetch books from the indexedDB
 	useLiveQuery(async () => {
-		setBooks(await db.books.toArray())
+		setBooks((await db.books.toArray()).sort(sortBooks))
 	})
 
 	// Send uploaded file to the indexedDB
@@ -65,6 +95,7 @@ export default function Dashboard() {
 					if (!numPages) throw new Error("Error getting number of pages")
 
 					const title = file.name.substring(0, file.name.length - 4).replace(/_/g, " ")
+					const currTime = Date.now()
 
 					await db.books.add({
 						title: title,
@@ -72,7 +103,9 @@ export default function Dashboard() {
 						data: file,
 						totalPages: numPages,
 						currentPage: 1,
-						lastReadPage: 1
+						lastReadPage: 1,
+						addTime: currTime,
+						lastReadTime: currTime
 					})
 				} catch (error) {
 					console.error(error)
@@ -94,13 +127,30 @@ export default function Dashboard() {
 		setBooks(books.map(b => (b.id === book.id ? book : b)))
 	}
 
+	function handleChangeSortOrder(order: SortBy) {
+		setSortBy(order)
+		setBooks(books.sort(sortBooks))
+	}
+
 	return (
 		<>
-			<nav className={styles.navbar}>
+			<nav className={styles["navbar"]}>
 				<img
 					src={darkmode() ? bannerLogoDark : bannerLogoLight}
 					id={styles.banner}
 				/>
+
+				<ToggleButtonGroup
+					aria-label="Sort by"
+					className={styles["sort-buttons"]}
+					selectedKeys={[sortBy]}
+					onSelectionChange={keys => handleChangeSortOrder(Array.from(keys)[0] as SortBy)}
+				>
+					<ToggleButton id={SortBy.Title}>Title</ToggleButton>
+					<ToggleButton id={SortBy.Author}>Author</ToggleButton>
+					<ToggleButton id={SortBy.LastRead}>Last Read</ToggleButton>
+					<ToggleButton id={SortBy.LastAdded}>Last Added</ToggleButton>
+				</ToggleButtonGroup>
 			</nav>
 
 			<DropZone

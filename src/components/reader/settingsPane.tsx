@@ -8,7 +8,7 @@ import {
 	Switch
 } from "react-aria-components"
 
-import BionicSettings from "../../types/bionicSettings"
+import BionicSettings from "../../enums/bionicSettings"
 import styles from "./settingsPane.module.css"
 
 interface props {

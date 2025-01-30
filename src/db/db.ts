@@ -9,8 +9,8 @@ interface Book {
 	cover?: Blob
 	data: Blob
 	lastReadPage: number
-	addTime: Date
-	lastReadTime: Date
+	addTime: number
+	lastReadTime: number
 }
 
 const db = new Dexie("FriendsDatabase") as Dexie & {

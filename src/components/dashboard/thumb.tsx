@@ -6,7 +6,7 @@ import { Document, Thumbnail } from "react-pdf"
 import { Link, useNavigate } from "@tanstack/react-router"
 
 import { Book } from "../../db/db"
-import { ProgressInfoType } from "../../types/progressInfoType"
+import { ProgressInfoType } from "../../enums/progressInfoType"
 import DeleteConfirmation from "./deleteConfirmation"
 import MetadataEditor from "./metadataEditor"
 import ReadProgress from "./readProgress"
