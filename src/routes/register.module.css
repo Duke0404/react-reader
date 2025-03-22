@@ -1,7 +1,8 @@
 .navbar {
 	display: flex;
 	padding: 2rem;
-}#form {
+}
+#form {
 	width: 60%;
 	height: 100%;
 }
@@ -20,8 +21,6 @@
 	flex-direction: column;
 	width: 100%;
 }
-
-
 
 @media screen and (max-width: 768px) {
 	#form {

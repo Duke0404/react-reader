@@ -14,7 +14,8 @@
 	transition: ease-in-out 200ms;
 	box-shadow: 0 0 10px 0.1px var(--brand-color);
 
-	&:hover, &:focus {
+	&:hover,
+	&:focus {
 		scale: 1.02;
 	}
 }

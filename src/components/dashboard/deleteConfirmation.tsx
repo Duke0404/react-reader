@@ -23,9 +23,10 @@ export default function DeleteConfirmation({ title, handleDelete, remove }: prop
 								Delete <span className="red-text">{title}</span>?
 							</Heading>
 
-                            <p>
-                                Are you sure you want to permanently delete this book, its bookmarks and saved preferences?
-                            </p>
+							<p>
+								Are you sure you want to permanently delete this book, its bookmarks
+								and saved preferences?
+							</p>
 
 							<div className={styles["action-group"]}>
 								<Button

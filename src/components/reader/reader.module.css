@@ -22,10 +22,10 @@
 		padding: 0 4rem;
 	}
 
-    .document-wrapper {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+	.document-wrapper {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 }

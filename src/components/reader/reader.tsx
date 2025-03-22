@@ -91,7 +91,8 @@ export default function Reader({ bookId, initPage }: props) {
 				}
 
 				context.font = `300 ${fontSize}px ${font}`
-				const boldWidth = context.measureText(word.slice(0, threshold)).width + threshold / 2
+				const boldWidth =
+					context.measureText(word.slice(0, threshold)).width + threshold / 2
 				context.globalAlpha = bionicSettings.lowlightOpacity
 				context.fillText(word.slice(threshold), currentX + boldWidth, offsetY)
 				context.globalAlpha = 1
@@ -135,7 +136,6 @@ export default function Reader({ bookId, initPage }: props) {
 		// Render the text with the bold modifications
 		renderTextWithBold(textContent, context, scaleX, scaleY, page.height)
 	}
-
 
 	const ControlWrapper = ({
 		currPages,
