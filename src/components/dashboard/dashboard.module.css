@@ -47,3 +47,9 @@
 		padding: 2rem 0;
 	}
 }
+
+.navbar-buttons {
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+}

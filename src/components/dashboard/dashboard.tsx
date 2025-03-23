@@ -1,6 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks"
 import { getDocument } from "pdfjs-dist"
-import { useEffect, useState } from "react"
+import { useContext, useState } from "react"
+import { BackendContext } from "../../contexts/backend"
 import {
 	Button,
 	DropZone,
@@ -8,29 +9,19 @@ import {
 	ToggleButton,
 	ToggleButtonGroup
 } from "react-aria-components"
-import { MdAdd } from "react-icons/md"
-
-import { useNavigate } from "@tanstack/react-router"
+import { MdAdd, MdLanguage, MdSort } from "react-icons/md"
 
 import bannerLogoDark from "../../assets/banner-logo-dark.svg"
 import bannerLogoLight from "../../assets/banner-logo-light.svg"
 import { Book, db } from "../../db/db"
-import checkRegistration from "../../utils/checkRegistration"
 import darkmode from "../../utils/darkmode"
 import styles from "./dashboard.module.css"
 import Placeholder from "./placeholder"
 import Thumbnail from "./thumb"
+import { MdOutlineCloudDone, MdOutlineCloudOff, MdOutlineSettings } from "react-icons/md"
+import { useTranslation } from "react-i18next"
 
 export default function Dashboard() {
-	const navigate = useNavigate()
-
-	// Check if the user is registered, else redirect to the registration page
-	useEffect(() => {
-		if (!checkRegistration()) {
-			navigate({ to: "/register" })
-		}
-	}, [navigate])
-
 	const [fileError, setFileError] = useState("")
 	const [books, setBooks] = useState<Book[]>([])
 
@@ -132,6 +123,10 @@ export default function Dashboard() {
 		setBooks(books.sort(sortBooks))
 	}
 
+	const backend = useContext(BackendContext)
+
+	const { t, i18n } = useTranslation()
+
 	return (
 		<>
 			<nav className={styles["navbar"]}>
@@ -139,46 +134,57 @@ export default function Dashboard() {
 					src={darkmode() ? bannerLogoDark : bannerLogoLight}
 					id={styles.banner}
 				/>
+				<div className={styles["navbar-buttons"]}>
+					<Button
+						className="react-aria-Button subtle-button"
+						aria-label={t("Backend connection")}
+					>
+						{backend ? <MdOutlineCloudDone /> : <MdOutlineCloudOff />}
+					</Button>
 
-				<ToggleButtonGroup
-					aria-label="Sort by"
-					className={styles["sort-buttons"]}
-					selectedKeys={[sortBy]}
-					onSelectionChange={keys => handleChangeSortOrder(Array.from(keys)[0] as SortBy)}
-				>
-					<ToggleButton id={SortBy.Title}>Title</ToggleButton>
-					<ToggleButton id={SortBy.Author}>Author</ToggleButton>
-					<ToggleButton id={SortBy.LastRead}>Last Read</ToggleButton>
-					<ToggleButton id={SortBy.LastAdded}>Last Added</ToggleButton>
-				</ToggleButtonGroup>
+					<Button
+						className="react-aria-Button subtle-button"
+						aria-label={t("Settings")}
+					>
+						<MdOutlineSettings />
+					</Button>
+
+					<Button
+						className="react-aria-Button subtle-button"
+						aria-label={t("Sort by")}
+					>
+						<MdSort />
+					</Button>
+
+					{/* <ToggleButtonGroup
+						aria-label="Sort by"
+						className={styles["sort-buttons"]}
+						selectedKeys={[sortBy]}
+						onSelectionChange={keys =>
+							handleChangeSortOrder(Array.from(keys)[0] as SortBy)
+						}
+					>
+						<ToggleButton id={SortBy.Title}>{t("Title")}</ToggleButton>
+						<ToggleButton id={SortBy.Author}>{t("Author")}</ToggleButton>
+						<ToggleButton id={SortBy.LastRead}>{t("Last Read")}</ToggleButton>
+						<ToggleButton id={SortBy.LastAdded}>{t("Last Added")}</ToggleButton>
+					</ToggleButtonGroup> */}
+				</div>
 			</nav>
-
-			<DropZone
-				className={styles["drop-area"]}
-				onDrop={async event => {
-					setFileError("")
-					const filteredItems = event.items.filter(item => item.kind === "file")
-					const files = (
-						await Promise.all(filteredItems.map(item => item.getFile()))
-					).filter(file => file.type === "application/pdf")
-					const dataTransfer = new DataTransfer()
-					files.forEach(file => dataTransfer.items.add(file))
-					handleFileUpload(dataTransfer.files)
-				}}
-			>
-				{books.length === 0 && <Placeholder />}
-			</DropZone>
-
 			<div>
 				<section className={styles.dashboard}>
-					{books.map(book => (
-						<Thumbnail
-							book={book}
-							handleDelete={handleDeleteBook}
-							handleSave={handleSaveBook}
-							key={book.id}
-						/>
-					))}
+					{books.length > 0 ? (
+						books.map(book => (
+							<Thumbnail
+								book={book}
+								handleDelete={handleDeleteBook}
+								handleSave={handleSaveBook}
+								key={book.id}
+							/>
+						))
+					) : (
+						<Placeholder />
+					)}
 				</section>
 
 				{fileError && <div>{fileError}</div>}

@@ -83,7 +83,7 @@ export default function SettingsPane({ bionicSettings, setBionicSettings }: prop
 						setBionicSettings({ ...bionicSettings, lowlightOpacity })
 					}
 					minValue={0}
-					maxValue={0.8}
+					maxValue={1}
 					step={0.2}
 					isDisabled={!bionicSettings.on}
 				>

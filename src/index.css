@@ -82,6 +82,7 @@ a {
 }
 
 .react-aria-Button {
+	position: relative; /* Required for pseudo-element positioning */
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -94,29 +95,52 @@ a {
 	font-size: 1.2rem;
 	cursor: pointer;
 	transition: ease-in-out 200ms;
+	overflow: hidden;
+	box-shadow: 0 0 10px 0.1px var(--bg-color-3);
+	min-width: 54.4px;
+	min-height: 54.4px;
 
 	& span {
 		font-size: 1rem;
+		position: relative; /* Ensures the span stays above the pseudo-element */
+		z-index: 1;
 	}
 
-	&[data-hovered] {
-		background-color: color(
-			from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
-		);
-		scale: 1.05;
+	&::before {
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 200px;
+		height: 200px;
+		background-color: rgba(255, 255, 255, 0.3); /* Bubble effect color */
+		border-radius: 50%;
+		transform: translate(-50%, -50%) scale(0);
+		transition: transform 200ms ease-in-out;
+		pointer-events: none; /* Ensures the pseudo-element doesn't interfere with clicks */
 	}
 
+	&[data-hovered]::before,
+	&[data-focused]::before {
+		transform: translate(-50%, -50%) scale(1.5); /* Adjust scale for bubble size */
+	}
+
+	&[data-hovered],
 	&[data-focused] {
 		background-color: color(
 			from var(--brand-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
 		);
-		scale: 1.05;
-		outline: none;
+		scale: 1;
+		box-shadow: 0 0 20px 0.5px var(--bg-color-3);
 	}
 
 	&[data-pressed] {
 		background-color: var(--brand-color);
 		scale: 0.95;
+	}
+
+	&[data-pressed]::before {
+		transform: translate(-50%, -50%) scale(0); /* Hide bubble effect on press */
 	}
 }
 
@@ -261,6 +285,17 @@ a {
 		background-color: color(
 			from var(--sky-color) display-p3 calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
 		);
+	}
+}
+
+.subtle-button {
+	background-color: transparent;
+	color: var(--text-color-1);
+	box-shadow: none;
+
+	&[data-hovered],
+	&[data-focused] {
+		background-color: var(--bg-color-3);
 	}
 }
 

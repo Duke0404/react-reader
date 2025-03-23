@@ -1,11 +1,13 @@
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
+import "./internationalization"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { routeTree } from "./routeTree.gen"
 import { pdfjs } from "react-pdf"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
 import "./index.css"
+import { BackendContext } from "./contexts/backend"
 
 // Create a new router instance
 const router = createRouter({ routeTree })
@@ -26,10 +28,14 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 // Render the app
 const rootElement = document.getElementById("root")!
 if (!rootElement.innerHTML) {
+	const backend = localStorage.getItem("backend") || ""
+
 	const root = ReactDOM.createRoot(rootElement)
 	root.render(
 		<StrictMode>
-			<RouterProvider router={router} />
+			<BackendContext.Provider value={backend}>
+				<RouterProvider router={router} />
+			</BackendContext.Provider>
 		</StrictMode>
 	)
 }
