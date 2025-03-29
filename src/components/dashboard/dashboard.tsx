@@ -2,14 +2,8 @@ import { useLiveQuery } from "dexie-react-hooks"
 import { getDocument } from "pdfjs-dist"
 import { useContext, useState } from "react"
 import { BackendContext } from "../../contexts/backend"
-import {
-	Button,
-	DropZone,
-	FileTrigger,
-	ToggleButton,
-	ToggleButtonGroup
-} from "react-aria-components"
-import { MdAdd, MdLanguage, MdSort } from "react-icons/md"
+import { Button, FileTrigger } from "react-aria-components"
+import { MdAdd } from "react-icons/md"
 
 import bannerLogoDark from "../../assets/banner-logo-dark.svg"
 import bannerLogoLight from "../../assets/banner-logo-light.svg"
@@ -18,21 +12,21 @@ import darkmode from "../../utils/darkmode"
 import styles from "./dashboard.module.css"
 import Placeholder from "./placeholder"
 import Thumbnail from "./thumb"
+import { SortBy } from "../../enums/booksSortBy"
 import { MdOutlineCloudDone, MdOutlineCloudOff, MdOutlineSettings } from "react-icons/md"
 import { useTranslation } from "react-i18next"
+import SortPopup from "./sortPopup"
 
 export default function Dashboard() {
 	const [fileError, setFileError] = useState("")
 	const [books, setBooks] = useState<Book[]>([])
 
-	enum SortBy {
-		Title,
-		Author,
-		LastRead,
-		LastAdded
-	}
-
 	const [sortBy, setSortBy] = useState(SortBy.LastRead)
+
+	function handleChangeSortOrder(order: SortBy) {
+		setSortBy(order)
+		setBooks(books.sort(sortBooks))
+	}
 
 	function sortBooks(a: Book, b: Book) {
 		switch (sortBy) {
@@ -118,14 +112,9 @@ export default function Dashboard() {
 		setBooks(books.map(b => (b.id === book.id ? book : b)))
 	}
 
-	function handleChangeSortOrder(order: SortBy) {
-		setSortBy(order)
-		setBooks(books.sort(sortBooks))
-	}
-
 	const backend = useContext(BackendContext)
 
-	const { t, i18n } = useTranslation()
+	const { t } = useTranslation()
 
 	return (
 		<>
@@ -148,27 +137,10 @@ export default function Dashboard() {
 					>
 						<MdOutlineSettings />
 					</Button>
-
-					<Button
-						className="react-aria-Button subtle-button"
-						aria-label={t("Sort by")}
-					>
-						<MdSort />
-					</Button>
-
-					{/* <ToggleButtonGroup
-						aria-label="Sort by"
-						className={styles["sort-buttons"]}
-						selectedKeys={[sortBy]}
-						onSelectionChange={keys =>
-							handleChangeSortOrder(Array.from(keys)[0] as SortBy)
-						}
-					>
-						<ToggleButton id={SortBy.Title}>{t("Title")}</ToggleButton>
-						<ToggleButton id={SortBy.Author}>{t("Author")}</ToggleButton>
-						<ToggleButton id={SortBy.LastRead}>{t("Last Read")}</ToggleButton>
-						<ToggleButton id={SortBy.LastAdded}>{t("Last Added")}</ToggleButton>
-					</ToggleButtonGroup> */}
+					<SortPopup
+						handleChangeSortOrder={handleChangeSortOrder}
+						sortBy={sortBy}
+					/>
 				</div>
 			</nav>
 			<div>

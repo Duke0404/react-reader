@@ -248,6 +248,100 @@ a {
 	}
 }
 
+/* Add these styles to your existing index.css file */
+
+/* Popover styles */
+.react-aria-Popover {
+	background: var(--bg-color-2);
+	border: 1px solid var(--bg-color-3);
+	border-radius: 0.5rem;
+	box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
+	color: var(--text-color-1);
+	max-width: 250px;
+	padding: 1rem;
+	outline: none;
+	transform-origin: top center;
+	animation: fadeIn 200ms ease;
+
+	&[data-entering] {
+		animation:
+			fadeIn 200ms ease,
+			slideIn 200ms ease;
+	}
+
+	&[data-exiting] {
+		animation:
+			fadeOut 200ms ease,
+			slideOut 200ms ease;
+	}
+}
+
+/* Dialog styles */
+.react-aria-Dialog {
+	outline: none;
+	max-height: inherit;
+	overflow: auto;
+
+	& .react-aria-Heading {
+		margin-top: 0;
+		margin-bottom: 1rem;
+		font-size: 1.25rem;
+	}
+}
+
+/* OverlayArrow styles */
+.react-aria-OverlayArrow svg {
+	display: block;
+	fill: var(--bg-color-2);
+	stroke: var(--bg-color-3);
+	stroke-width: 1px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateY(-10px);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideOut {
+	from {
+		transform: translateY(0);
+	}
+	to {
+		transform: translateY(-10px);
+	}
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+	.react-aria-Popover {
+		max-width: 100%;
+		width: calc(100vw - 4rem);
+	}
+}
+
 .red-button,
 .red-button[data-pressed] {
 	background-color: var(--red-color);
