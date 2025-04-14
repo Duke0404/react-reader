@@ -34,7 +34,9 @@ body {
 }
 
 a {
-	all: unset;
+	text-decoration: none;
+	color: var(--text-color-1);
+	cursor: pointer;
 }
 
 #root {
@@ -277,16 +279,30 @@ a {
 }
 
 /* Dialog styles */
-.react-aria-Dialog {
-	outline: none;
-	max-height: inherit;
-	overflow: auto;
+.react-aria-Modal {
+	position: fixed;
+	inset: 0;
+	z-index: 50;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.5);
+}
 
-	& .react-aria-Heading {
-		margin-top: 0;
-		margin-bottom: 1rem;
-		font-size: 1.25rem;
-	}
+.react-aria-Dialog {
+	background: var(--bg-color-2);
+	padding: 1.5rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	max-width: 28rem;
+	width: 100%;
+	outline: none;
+}
+
+.react-aria-Dialog[role="alertdialog"] {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 /* OverlayArrow styles */

@@ -1,0 +1,6 @@
+.crop-layer {
+	aspect-ratio: 200/255;
+	overflow: hidden;
+	background-color: var(--brand-color);
+	border-radius: 15px;
+}

@@ -6,8 +6,8 @@ interface Book {
 	author?: string
 	currentPage: number
 	totalPages: number
-	cover?: Blob
-	data: Blob
+	cover: File | null
+	data: File
 	lastReadPage: number
 	addTime: number
 	lastReadTime: number

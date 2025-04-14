@@ -1,21 +1,21 @@
 import { useLiveQuery } from "dexie-react-hooks"
-import { getDocument } from "pdfjs-dist"
+import { pdfjs } from "react-pdf"
 import { useContext, useState } from "react"
 import { BackendContext } from "../../contexts/backend"
 import { Button, FileTrigger } from "react-aria-components"
 import { MdAdd } from "react-icons/md"
 
-import bannerLogoDark from "../../assets/banner-logo-dark.svg"
-import bannerLogoLight from "../../assets/banner-logo-light.svg"
 import { Book, db } from "../../db/db"
-import darkmode from "../../utils/darkmode"
 import styles from "./dashboard.module.css"
 import Placeholder from "./placeholder"
-import Thumbnail from "./thumb"
 import { SortBy } from "../../enums/booksSortBy"
 import { MdOutlineCloudDone, MdOutlineCloudOff, MdOutlineSettings } from "react-icons/md"
 import { useTranslation } from "react-i18next"
 import SortPopup from "./sortPopup"
+import BookInfo from "./bookInfo/bookInfo"
+import { ProgressInfoType } from "../../enums/progressInfoType"
+import { BookContext } from "../../contexts/book"
+import OptionsBar from "./optionsBar/optionsBar"
 
 export default function Dashboard() {
 	const [fileError, setFileError] = useState("")
@@ -66,7 +66,7 @@ export default function Dashboard() {
 
 				try {
 					const arrayBuffer = await file.arrayBuffer()
-					const pdf = await getDocument(arrayBuffer).promise
+					const pdf = await pdfjs.getDocument(arrayBuffer).promise
 					if (!pdf) throw new Error("Error loading PDF")
 
 					const numPages = pdf.numPages
@@ -90,7 +90,8 @@ export default function Dashboard() {
 						currentPage: 1,
 						lastReadPage: 1,
 						addTime: currTime,
-						lastReadTime: currTime
+						lastReadTime: currTime,
+						cover: null
 					})
 				} catch (error) {
 					console.error(error)
@@ -101,16 +102,18 @@ export default function Dashboard() {
 	}
 
 	// Delete book from state and indexedDB
-	async function handleDeleteBook(bookId: number) {
+	async function deleteBook(bookId: number) {
 		await db.books.delete(bookId)
 		setBooks(books.filter(book => book.id !== bookId))
 	}
 
 	// Save changes to book in state and indexedDB
-	async function handleSaveBook(book: Book) {
+	async function changeBook(book: Book) {
 		await db.books.put(book)
 		setBooks(books.map(b => (b.id === book.id ? book : b)))
 	}
+
+	const [progressInfoType] = useState(ProgressInfoType.page)
 
 	const backend = useContext(BackendContext)
 
@@ -118,7 +121,7 @@ export default function Dashboard() {
 
 	return (
 		<>
-			<nav className={styles["navbar"]}>
+			{/* <nav className={styles["navbar"]}>
 				<img
 					src={darkmode() ? bannerLogoDark : bannerLogoLight}
 					id={styles.banner}
@@ -142,17 +145,20 @@ export default function Dashboard() {
 						sortBy={sortBy}
 					/>
 				</div>
-			</nav>
+			</nav> */}
+			<OptionsBar />
 			<div>
 				<section className={styles.dashboard}>
 					{books.length > 0 ? (
 						books.map(book => (
-							<Thumbnail
-								book={book}
-								handleDelete={handleDeleteBook}
-								handleSave={handleSaveBook}
-								key={book.id}
-							/>
+							<>
+								<BookContext.Provider
+									value={{ book, deleteBook, changeBook }}
+									key={book.id}
+								>
+									<BookInfo progressInfoType={progressInfoType} />
+								</BookContext.Provider>
+							</>
 						))
 					) : (
 						<Placeholder />

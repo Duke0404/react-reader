@@ -1,0 +1,32 @@
+.container {
+	gap: 1rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.image-cover {
+	aspect-ratio: 200/255;
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+.info-card {
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+	gap: 1rem;
+	border-radius: 15px;
+}
+
+.text-details {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	min-height: 60px;
+	overflow: hidden;
+}
+
+.author {
+	font-size: 0.75rem;
+	color: var(--text-color-2);
+}

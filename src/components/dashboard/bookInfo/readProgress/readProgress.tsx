@@ -1,6 +1,6 @@
 import { Meter } from "react-aria-components"
 
-import { ProgressInfoType } from "../../enums/progressInfoType"
+import { ProgressInfoType } from "../../../../enums/progressInfoType"
 import styles from "./readProgress.module.css"
 
 interface props {
