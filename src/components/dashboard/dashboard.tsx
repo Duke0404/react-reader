@@ -1,6 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks"
 import { pdfjs } from "react-pdf"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { BackendContext } from "../../contexts/backend"
 import { Button, FileTrigger } from "react-aria-components"
 import { MdAdd } from "react-icons/md"
@@ -16,6 +16,7 @@ import BookInfo from "./bookInfo/bookInfo"
 import { ProgressInfoType } from "../../enums/progressInfoType"
 import { BookContext } from "../../contexts/book"
 import OptionsBar from "./optionsBar/optionsBar"
+import { BackendModalOpenContext } from "../../contexts/backendModalOpen"
 
 export default function Dashboard() {
 	const [fileError, setFileError] = useState("")
@@ -115,9 +116,24 @@ export default function Dashboard() {
 
 	const [progressInfoType] = useState(ProgressInfoType.page)
 
-	const backend = useContext(BackendContext)
+	const { backend } = useContext(BackendContext)
 
 	const { t } = useTranslation()
+
+	const [backendFormOpen, setBackendFormOpen] = useState(false)
+
+	// Check if the backend is configured then if its authentication token is valid
+	useEffect(() => {
+		console.log(backend.isSet())
+		;(async function () {
+			if (backend.isSet()) {
+				const authValid = await backend.isAuthValid()
+				if (!authValid) {
+					setBackendFormOpen(true)
+				}
+			}
+		})()
+	}, [backend])
 
 	return (
 		<>
@@ -146,7 +162,16 @@ export default function Dashboard() {
 					/>
 				</div>
 			</nav> */}
-			<OptionsBar />
+
+			<BackendModalOpenContext.Provider
+				value={{
+					backendModalOpen: backendFormOpen,
+					setBackendModalOpen: setBackendFormOpen
+				}}
+			>
+				<OptionsBar />
+			</BackendModalOpenContext.Provider>
+
 			<div>
 				<section className={styles.dashboard}>
 					{books.length > 0 ? (

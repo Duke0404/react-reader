@@ -21,11 +21,11 @@ export const Route = createRootRoute({
 function RootComponent() {
 	const router = useRouter()
 
-	const backendUrl = localStorage.getItem("backend")
-	const [backend, setBackend] = useState(new BackendClient(backendUrl || ""))
+	const backendUrl = localStorage.getItem("backend") || ""
+	const [backend, setBackend] = useState(new BackendClient(backendUrl))
 
 	return (
-		<BackendContext.Provider value={backendUrl ? { backend, setBackend } : null}>
+		<BackendContext.Provider value={{ backend, setBackend }}>
 			<RouterProvider
 				navigate={(to, options) => router.navigate({ to, ...options })}
 				useHref={to => router.buildLocation({ to }).href}

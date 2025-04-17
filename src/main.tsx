@@ -6,6 +6,7 @@ import { routeTree } from "./routeTree.gen"
 import { pdfjs } from "react-pdf"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
+import "./ariaStyles.css"
 import "./index.css"
 
 // Create a new router instance
