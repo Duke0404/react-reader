@@ -1,6 +1,6 @@
 export enum SortBy {
-		Title,
-		Author,
-		LastRead,
-		LastAdded
+		Title = "title",
+		Author = "author",
+		LastRead = "lastRead",
+		LastAdded = "lastAdded"
 	}

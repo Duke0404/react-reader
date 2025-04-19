@@ -1,10 +1,6 @@
 import {
 	DialogTrigger,
 	Button,
-	Popover,
-	OverlayArrow,
-	Dialog,
-	ToggleButtonGroup
 } from "react-aria-components"
 import { MdOutlineCloud, MdOutlineCloudOff, MdOutlineSort } from "react-icons/md"
 import styles from "./optionsBar.module.css"
@@ -15,6 +11,7 @@ import { useContext, useEffect, useState } from "react"
 import { BackendContext } from "../../../contexts/backend"
 import BackendForm from "./backendForm/backendForm"
 import { BackendModalOpenContext } from "../../../contexts/backendModalOpen"
+import SortPopover from "./sortPopover/sortPopover"
 
 export default function OptionsBar() {
 	const darkMode = useDarkMode()
@@ -45,7 +42,7 @@ export default function OptionsBar() {
 		<div className={styles["container"]}>
 			<img src={darkMode ? bannerLogoDark : bannerLogoLight} />
 
-			<div>
+			<div className={styles["options"]}>
 				{/* Backend connection indicator and button */}
 				<DialogTrigger>
 					<Button
@@ -63,34 +60,7 @@ export default function OptionsBar() {
 						<MdOutlineSort />
 					</Button>
 
-					<Popover>
-						<OverlayArrow />
-						<Dialog>
-							<span>Sort basis</span>
-
-							<ToggleButtonGroup className="react-aria-ToggleButtonGroup vertical">
-								<Button>
-									<span>Name</span>
-								</Button>
-								<Button>
-									<span>Date added</span>
-								</Button>
-								<Button>
-									<span>Last read</span>
-								</Button>
-							</ToggleButtonGroup>
-
-							<span>Sort order</span>
-							<ToggleButtonGroup className="react-aria-ToggleButtonGroup vertical">
-								<Button>
-									<span>Ascending</span>
-								</Button>
-								<Button>
-									<span>Descending</span>
-								</Button>
-							</ToggleButtonGroup>
-						</Dialog>
-					</Popover>
+					<SortPopover />
 				</DialogTrigger>
 			</div>
 		</div>

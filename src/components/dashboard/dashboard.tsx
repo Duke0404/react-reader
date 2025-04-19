@@ -1,6 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks"
 import { pdfjs } from "react-pdf"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState, useCallback } from "react"
 import { BackendContext } from "../../contexts/backend"
 import { Button, FileTrigger } from "react-aria-components"
 import { MdAdd } from "react-icons/md"
@@ -9,43 +9,68 @@ import { Book, db } from "../../db/db"
 import styles from "./dashboard.module.css"
 import Placeholder from "./placeholder"
 import { SortBy } from "../../enums/booksSortBy"
-import { MdOutlineCloudDone, MdOutlineCloudOff, MdOutlineSettings } from "react-icons/md"
-import { useTranslation } from "react-i18next"
-import SortPopup from "./sortPopup"
 import BookInfo from "./bookInfo/bookInfo"
 import { ProgressInfoType } from "../../enums/progressInfoType"
 import { BookContext } from "../../contexts/book"
 import OptionsBar from "./optionsBar/optionsBar"
 import { BackendModalOpenContext } from "../../contexts/backendModalOpen"
+import { SortConfig } from "../../interfaces/sortConfig"
+import { SortConfigContext } from "../../contexts/sortConfig"
 
 export default function Dashboard() {
 	const [fileError, setFileError] = useState("")
 	const [books, setBooks] = useState<Book[]>([])
 
-	const [sortBy, setSortBy] = useState(SortBy.LastRead)
+	const sortConfigSavedValue = useMemo(() => {
+		const savedValue = localStorage.getItem("sortConfig")
+		if (!savedValue) return null
+		console.log("Saved value:", savedValue)
+		return JSON.parse(savedValue) as SortConfig
+	}, [])
 
-	function handleChangeSortOrder(order: SortBy) {
-		setSortBy(order)
-		setBooks(books.sort(sortBooks))
-	}
-
-	function sortBooks(a: Book, b: Book) {
-		switch (sortBy) {
-			case SortBy.Title:
-				return a.title.localeCompare(b.title)
-			case SortBy.Author:
-				return (a.author || "").localeCompare(b.author || "")
-			case SortBy.LastRead:
-				return b.lastReadTime - a.lastReadTime
-			case SortBy.LastAdded:
-				return b.addTime - a.addTime
+	const [sortConfig, setSortConfig] = useState<SortConfig>(
+		sortConfigSavedValue || {
+			sortBy: SortBy.LastRead,
+			desc: false
 		}
-	}
+	)
+
+	const sortBooks = useCallback(
+		(a: Book, b: Book) => {
+			let res = 0
+
+			switch (sortConfig.sortBy) {
+				case SortBy.Title:
+					res = a.title.localeCompare(b.title)
+					break
+				case SortBy.Author:
+					res = (a.author || "").localeCompare(b.author || "")
+					break
+				case SortBy.LastRead:
+					res = b.lastReadTime - a.lastReadTime
+					break
+				case SortBy.LastAdded:
+					res = b.addTime - a.addTime
+					break
+			}
+
+			return res * (sortConfig.desc ? -1 : 1)
+		},
+		[sortConfig.sortBy, sortConfig.desc]
+	)
+
+	// Sort books based on sort config
+	useEffect(() => {
+		localStorage.setItem("sortConfig", JSON.stringify(sortConfig))
+		// Create a new sorted array instead of mutating
+		setBooks(prevBooks => [...prevBooks].sort(sortBooks))
+	}, [sortConfig, sortBooks])
 
 	// Fetch books from the indexedDB
 	useLiveQuery(async () => {
-		setBooks((await db.books.toArray()).sort(sortBooks))
-	})
+		const allBooks = await db.books.toArray()
+		setBooks(allBooks.sort(sortBooks))
+	}, [sortBooks])
 
 	// Send uploaded file to the indexedDB
 	async function handleFileUpload(files: FileList | null) {
@@ -118,13 +143,10 @@ export default function Dashboard() {
 
 	const { backend } = useContext(BackendContext)
 
-	const { t } = useTranslation()
-
 	const [backendFormOpen, setBackendFormOpen] = useState(false)
 
 	// Check if the backend is configured then if its authentication token is valid
 	useEffect(() => {
-		console.log(backend.isSet())
 		;(async function () {
 			if (backend.isSet()) {
 				const authValid = await backend.isAuthValid()
@@ -137,41 +159,16 @@ export default function Dashboard() {
 
 	return (
 		<>
-			{/* <nav className={styles["navbar"]}>
-				<img
-					src={darkmode() ? bannerLogoDark : bannerLogoLight}
-					id={styles.banner}
-				/>
-				<div className={styles["navbar-buttons"]}>
-					<Button
-						className="react-aria-Button subtle-button"
-						aria-label={t("Backend connection")}
-					>
-						{backend ? <MdOutlineCloudDone /> : <MdOutlineCloudOff />}
-					</Button>
-
-					<Button
-						className="react-aria-Button subtle-button"
-						aria-label={t("Settings")}
-					>
-						<MdOutlineSettings />
-					</Button>
-					<SortPopup
-						handleChangeSortOrder={handleChangeSortOrder}
-						sortBy={sortBy}
-					/>
-				</div>
-			</nav> */}
-
 			<BackendModalOpenContext.Provider
 				value={{
 					backendModalOpen: backendFormOpen,
 					setBackendModalOpen: setBackendFormOpen
 				}}
 			>
-				<OptionsBar />
+				<SortConfigContext.Provider value={{ sortConfig, setSortConfig }}>
+					<OptionsBar />
+				</SortConfigContext.Provider>
 			</BackendModalOpenContext.Provider>
-
 			<div>
 				<section className={styles.dashboard}>
 					{books.length > 0 ? (

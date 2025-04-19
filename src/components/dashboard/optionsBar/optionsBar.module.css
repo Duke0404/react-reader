@@ -5,7 +5,12 @@
 	align-items: center;
 	justify-content: center;
 	gap: 1rem;
-	padding: 1rem;
+	padding-bottom: 2rem;
+}
+
+.options {
+	display: flex;
+	gap: 1rem;
 }
 
 @media screen and (min-width: 768px) {

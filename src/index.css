@@ -91,7 +91,6 @@ a {
 .subtle-button {
 	background-color: transparent;
 	color: var(--text-color-1);
-	box-shadow: none;
 
 	&[data-hovered],
 	&[data-focused] {
