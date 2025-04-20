@@ -6,7 +6,7 @@ import { PageCallback } from "react-pdf/src/shared/types.ts"
 import { useNavigate } from "@tanstack/react-router"
 
 import { Book, db } from "../../db/db"
-import BionicSettings from "../../enums/bionicSettings"
+import BionicSettings from "../../interfaces/bionicSettings"
 import { ReadingDirection } from "../../enums/readingDirection"
 import ActionBar from "./actionBar"
 import ControlBar from "./controlBar"

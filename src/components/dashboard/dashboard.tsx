@@ -7,7 +7,7 @@ import { MdAdd } from "react-icons/md"
 
 import { Book, db } from "../../db/db"
 import styles from "./dashboard.module.css"
-import Placeholder from "./placeholder"
+import Placeholder from "./placeholder/placeholder"
 import { SortBy } from "../../enums/booksSortBy"
 import BookInfo from "./bookInfo/bookInfo"
 import { ProgressInfoType } from "../../enums/progressInfoType"
