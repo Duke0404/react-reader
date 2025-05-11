@@ -1,4 +1,4 @@
-export default interface BionicSettings {
+export interface BionicSettings {
 	on: boolean
 	highlightSize: number
 	highlightJump: number

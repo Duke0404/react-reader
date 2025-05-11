@@ -1,31 +1,22 @@
-import { useRef } from "react"
+import { useContext, useMemo, useRef } from "react"
 import { Document, Page } from "react-pdf"
 import { PageCallback } from "react-pdf/src/shared/types.js"
 
 import { useNavigate } from "@tanstack/react-router"
 
 import styles from "./reader.module.css"
+import { BionicConfigContext } from "../../contexts/bionicConfig"
+import useBionicRendering from "../../hooks/useBionicRendering"
+import ControlBar from "./controlBar"
 
 export interface props {
 	bookId: number
 	bookData: Blob
 	initPage: number
 	totalPages: number
-	toggleDirection: () => void
-	canvasMod?: (page: PageCallback, canvas: HTMLCanvasElement) => Promise<void>
-	ControlBar: React.FC<{
-		currPages: number[]
-		handleDeltaPage: (delta: number) => void
-	}>
 }
 
-export default function HorizontalReader({
-	bookId,
-	bookData,
-	initPage,
-	canvasMod,
-	ControlBar
-}: props) {
+export default function HorizontalReader({ bookId, bookData, initPage, totalPages }: props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 
 	const navigate = useNavigate()
@@ -33,6 +24,18 @@ export default function HorizontalReader({
 	function handleDeltaPage(delta: number) {
 		navigate({ to: `/${bookId}/${initPage + delta}`, replace: true })
 	}
+
+	const { bionicConfig } = useContext(BionicConfigContext)
+	const { applyBionicEffect } = useBionicRendering()
+
+	const canvasMod = useMemo(
+		() =>
+			bionicConfig.on
+				? async (page: PageCallback, canvas: HTMLCanvasElement) =>
+						await applyBionicEffect(page, canvas, bionicConfig)
+				: undefined,
+		[bionicConfig, applyBionicEffect]
+	)
 
 	return (
 		<>
@@ -55,6 +58,7 @@ export default function HorizontalReader({
 			</Document>
 			<ControlBar
 				currPages={[initPage]}
+				totalPage={totalPages}
 				handleDeltaPage={handleDeltaPage}
 			/>
 		</>

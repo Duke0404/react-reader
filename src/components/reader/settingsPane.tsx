@@ -7,36 +7,30 @@ import {
 	SliderTrack,
 	Switch
 } from "react-aria-components"
-
-import BionicSettings from "../../interfaces/bionicSettings"
+import { BionicConfigContext } from "../../contexts/bionicConfig"
 import styles from "./settingsPane.module.css"
+import { useContext } from "react"
 
-interface props {
-	bionicSettings: BionicSettings
-	setBionicSettings: (bionicSettings: BionicSettings) => void
-}
-export default function SettingsPane({ bionicSettings, setBionicSettings }: props) {
+export default function SettingsPane() {
+	const { bionicConfig, setBionicConfig } = useContext(BionicConfigContext)
+
 	return (
 		<>
 			<Form className={styles["pane"]}>
 				<Switch
-					isSelected={bionicSettings.on}
-					onChange={() =>
-						setBionicSettings({ ...bionicSettings, on: !bionicSettings.on })
-					}
+					isSelected={bionicConfig.on}
+					onChange={() => setBionicConfig({ ...bionicConfig, on: !bionicConfig.on })}
 				>
 					<div className="indicator" />
 					Bionic bolding
 				</Switch>
 
 				<Slider
-					value={bionicSettings.highlightSize}
-					onChange={highlightSize =>
-						setBionicSettings({ ...bionicSettings, highlightSize })
-					}
+					value={bionicConfig.highlightSize}
+					onChange={highlightSize => setBionicConfig({ ...bionicConfig, highlightSize })}
 					minValue={1}
 					maxValue={5}
-					isDisabled={!bionicSettings.on}
+					isDisabled={!bionicConfig.on}
 				>
 					<Label>Highlight Size</Label>
 					<SliderOutput />
@@ -46,13 +40,11 @@ export default function SettingsPane({ bionicSettings, setBionicSettings }: prop
 				</Slider>
 
 				<Slider
-					value={bionicSettings.highlightJump}
-					onChange={highlightJump =>
-						setBionicSettings({ ...bionicSettings, highlightJump })
-					}
+					value={bionicConfig.highlightJump}
+					onChange={highlightJump => setBionicConfig({ ...bionicConfig, highlightJump })}
 					minValue={1}
 					maxValue={5}
-					isDisabled={!bionicSettings.on}
+					isDisabled={!bionicConfig.on}
 				>
 					<Label>Highlight Jump</Label>
 					<SliderOutput />
@@ -62,13 +54,13 @@ export default function SettingsPane({ bionicSettings, setBionicSettings }: prop
 				</Slider>
 
 				<Slider
-					value={bionicSettings.highlightMultiplier}
+					value={bionicConfig.highlightMultiplier}
 					onChange={highlightMultiplier =>
-						setBionicSettings({ ...bionicSettings, highlightMultiplier })
+						setBionicConfig({ ...bionicConfig, highlightMultiplier })
 					}
 					minValue={1}
 					maxValue={4}
-					isDisabled={!bionicSettings.on}
+					isDisabled={!bionicConfig.on}
 				>
 					<Label>Highlight Multiplier</Label>
 					<SliderOutput />
@@ -78,14 +70,14 @@ export default function SettingsPane({ bionicSettings, setBionicSettings }: prop
 				</Slider>
 
 				<Slider
-					value={bionicSettings.lowlightOpacity}
+					value={bionicConfig.lowlightOpacity}
 					onChange={lowlightOpacity =>
-						setBionicSettings({ ...bionicSettings, lowlightOpacity })
+						setBionicConfig({ ...bionicConfig, lowlightOpacity })
 					}
 					minValue={0}
 					maxValue={1}
 					step={0.2}
-					isDisabled={!bionicSettings.on}
+					isDisabled={!bionicConfig.on}
 				>
 					<Label>Lowlight Opacity</Label>
 					<SliderOutput />

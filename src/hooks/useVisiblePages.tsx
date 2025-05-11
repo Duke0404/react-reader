@@ -21,7 +21,7 @@ export default function useVisiblePages(
 				const lastVisible = visiblePages[visiblePages.length - 1]
 				onVisiblePagesChange(firstVisible, lastVisible)
 			}
-		}, 100) // Wait until 1s after scrolling stops
+		}, 100) // Wait until 100ms after scrolling stops
 
 		const observer = new IntersectionObserver(
 			entries => {

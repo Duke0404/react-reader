@@ -1,36 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, useMemo, useContext } from "react"
 import { Document, Page } from "react-pdf"
 import { PageCallback } from "react-pdf/src/shared/types.js"
-
 import { useNavigate } from "@tanstack/react-router"
-
+import { BionicConfigContext } from "../../contexts/bionicConfig"
+import useBionicRendering from "../../hooks/useBionicRendering"
 import useVisiblePages from "../../hooks/useVisiblePages"
 import PagePlaceholder from "./pagePlaceholder"
 import styles from "./reader.module.css"
+import ControlBar from "./controlBar"
 
 export interface props {
 	bookId: number
 	bookData: Blob
 	initPage: number
 	totalPages: number
-	canvasMod?: (page: PageCallback, canvas: HTMLCanvasElement) => Promise<void>
-	ControlBar: React.FC<{
-		currPages: number[]
-		handleDeltaPage: (delta: number) => void
-	}>
 }
 
 // Number of pages to load before and after the current page
 const PAGE_BUFFER = 5
 
-export default function VerticalReader({
-	bookId,
-	bookData,
-	initPage,
-	totalPages,
-	canvasMod,
-	ControlBar
-}: props) {
+export default function VerticalReader({ bookId, bookData, initPage, totalPages }: props) {
 	const [currPage, setCurrPage] = useState(initPage)
 	const [tillPage, setTillPage] = useState(initPage)
 
@@ -87,10 +76,7 @@ export default function VerticalReader({
 			newVisitedPages.push(i)
 		}
 
-		setVisitedPageRange(vp => {
-			const t = new Set([...vp, ...newVisitedPages])
-			return t
-		})
+		setVisitedPageRange(vp => new Set([...vp, ...newVisitedPages]))
 	})
 
 	const shouldRenderPage = useCallback(
@@ -105,6 +91,24 @@ export default function VerticalReader({
 		})
 	}
 
+	const { bionicConfig } = useContext(BionicConfigContext)
+	const { applyBionicEffect } = useBionicRendering()
+
+	const canvasMod = useMemo(
+		() =>
+			bionicConfig.on
+				? async (page: PageCallback, canvas: HTMLCanvasElement) =>
+						await applyBionicEffect(page, canvas, bionicConfig)
+				: undefined,
+		[bionicConfig, applyBionicEffect]
+	)
+
+	// Trigger re-rendering of pages by changing its key when bionicConfig changes
+	const [renderKey, setRenderKey] = useState(0)
+	useEffect(() => {
+		setRenderKey(rk => rk + 1)
+	}, [bionicConfig])
+
 	return (
 		<>
 			<Document
@@ -115,7 +119,7 @@ export default function VerticalReader({
 					const pageNum = i + 1
 					return shouldRenderPage(pageNum) ? (
 						<Page
-							key={i}
+							key={`page_${pageNum}_${renderKey}`}
 							pageNumber={pageNum}
 							className={styles["page"]}
 							inputRef={ref => (pageRefs.current[i] = ref)}
@@ -123,7 +127,7 @@ export default function VerticalReader({
 							data-page-number={pageNum}
 							loading={
 								<PagePlaceholder
-									key={i}
+									key={`page_${pageNum}_${renderKey}`}
 									width={pageDimensions.width}
 									height={pageDimensions.height}
 									pageNumber={pageNum}
@@ -157,6 +161,7 @@ export default function VerticalReader({
 			</Document>
 			<ControlBar
 				currPages={[currPage, tillPage]}
+				totalPage={totalPages}
 				handleDeltaPage={handleDeltaPage}
 			/>
 		</>
