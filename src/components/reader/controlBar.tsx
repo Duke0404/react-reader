@@ -3,9 +3,7 @@ import {
 	MdArrowBack,
 	MdArrowDownward,
 	MdArrowForward,
-	MdArrowUpward,
-	MdOutlineKeyboardDoubleArrowDown,
-	MdOutlineKeyboardDoubleArrowRight
+	MdArrowUpward
 } from "react-icons/md"
 import { ReadingDirectionContext } from "../../contexts/readingDirection"
 import { ReadingDirection } from "../../enums/readingDirection"
@@ -19,7 +17,7 @@ interface props {
 }
 
 export default function ControlBar({ currPages, totalPage, handleDeltaPage }: props) {
-	const { readingDirection, setReadingDirection } = useContext(ReadingDirectionContext)
+	const { readingDirection } = useContext(ReadingDirectionContext)
 
 	return (
 		<nav className={styles["bar"]}>
@@ -46,7 +44,7 @@ export default function ControlBar({ currPages, totalPage, handleDeltaPage }: pr
 					)}
 				</Button>
 			</div>
-			{readingDirection === ReadingDirection.vertical ? (
+			{/* {readingDirection === ReadingDirection.vertical ? (
 				<Button onPress={() => setReadingDirection(ReadingDirection.horizontal)}>
 					<MdOutlineKeyboardDoubleArrowRight />
 				</Button>
@@ -54,7 +52,7 @@ export default function ControlBar({ currPages, totalPage, handleDeltaPage }: pr
 				<Button onPress={() => setReadingDirection(ReadingDirection.vertical)}>
 					<MdOutlineKeyboardDoubleArrowDown />
 				</Button>
-			)}
+			)} */}
 		</nav>
 	)
 }

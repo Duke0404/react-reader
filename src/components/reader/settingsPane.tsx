@@ -5,8 +5,11 @@ import {
 	SliderOutput,
 	SliderThumb,
 	SliderTrack,
-	Switch
+	Switch,
+	ToggleButtonGroup,
+	ToggleButton,
 } from "react-aria-components"
+import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowRight } from "react-icons/md"
 import { BionicConfigContext } from "../../contexts/bionicConfig"
 import styles from "./settingsPane.module.css"
 import { useContext } from "react"
@@ -17,6 +20,18 @@ export default function SettingsPane() {
 	return (
 		<>
 			<Form className={styles["pane"]}>
+				<ToggleButtonGroup>
+					<Label>Reading Direction</Label>
+					<ToggleButton>
+						<MdOutlineKeyboardDoubleArrowDown />
+						<span>Vertical</span>
+					</ToggleButton>
+					<ToggleButton>
+						<MdOutlineKeyboardDoubleArrowRight />
+						<span>Horizontal</span>
+					</ToggleButton>
+				</ToggleButtonGroup>
+
 				<Switch
 					isSelected={bionicConfig.on}
 					onChange={() => setBionicConfig({ ...bionicConfig, on: !bionicConfig.on })}
