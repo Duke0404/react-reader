@@ -1,6 +1,5 @@
 import { useContext } from "react"
-import { SortConfigContext } from "../../../../contexts/sortConfig"
-import { Popover, Dialog, ToggleButtonGroup, ToggleButton } from "react-aria-components"
+import { Dialog, Popover, ToggleButton, ToggleButtonGroup } from "react-aria-components"
 import {
 	MdOutlineAutoStories,
 	MdOutlineEvent,
@@ -9,6 +8,8 @@ import {
 	MdOutlinePerson,
 	MdOutlineTitle
 } from "react-icons/md"
+
+import { SortConfigContext } from "../../../../contexts/sortConfig"
 import { SortBy } from "../../../../enums/booksSortBy"
 
 export default function SortPopover() {

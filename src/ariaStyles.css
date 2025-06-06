@@ -300,6 +300,27 @@
 	gap: 0.5rem;
 }
 
+.react-aria-ToggleButtonGroup[data-orientation="horizontal"] {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+
+	& .react-aria-ToggleButton {
+		border-radius: 0.5rem;
+		justify-content: center;
+
+		&:first-of-type {
+			border-top-left-radius: 25px;
+			border-bottom-left-radius: 25px;
+		}
+
+		&:last-of-type {
+			border-top-right-radius: 25px;
+			border-bottom-right-radius: 25px;
+		}
+	}
+}
+
 .react-aria-ToggleButtonGroup[data-orientation="vertical"] {
 	display: flex;
 	flex-direction: column;
@@ -310,12 +331,12 @@
 		border-radius: 0.5rem;
 		justify-content: flex-start;
 
-		&:nth-child(1) {
+		&:first-of-type {
 			border-top-left-radius: 25px;
 			border-top-right-radius: 25px;
 		}
 
-		&:nth-last-child(1) {
+		&:last-of-type {
 			border-bottom-left-radius: 25px;
 			border-bottom-right-radius: 25px;
 		}

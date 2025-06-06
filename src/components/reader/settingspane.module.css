@@ -14,15 +14,7 @@
 	border-radius: 2rem;
 }
 
-@media screen and (min-width: 1280px) {
-	.pane {
-		bottom: initial;
-		top: 2rem;
-		width: 25rem;
-		height: initial;
-	}
-}
-
+/* Tablet and larger screens */
 @media screen and (min-width: 768px) {
 	.pane {
 		position: sticky;
@@ -30,5 +22,12 @@
 		top: 2rem;
 		width: 25rem;
 		height: initial;
+	}
+}
+
+/* Desktop screens */
+@media screen and (min-width: 1280px) {
+	.pane {
+		width: 30rem;
 	}
 }

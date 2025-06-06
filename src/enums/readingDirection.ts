@@ -1,4 +1,4 @@
 export enum ReadingDirection {
-	vertical,
-	horizontal
+	vertical = "vertical",
+	horizontal = "horizontal"
 }

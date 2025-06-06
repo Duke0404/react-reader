@@ -1,3 +1,4 @@
+import { useContext } from "react"
 import {
 	Form,
 	Label,
@@ -6,27 +7,43 @@ import {
 	SliderThumb,
 	SliderTrack,
 	Switch,
-	ToggleButtonGroup,
 	ToggleButton,
+	ToggleButtonGroup
 } from "react-aria-components"
 import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowRight } from "react-icons/md"
+
 import { BionicConfigContext } from "../../contexts/bionicConfig"
+import { ReadingDirectionContext } from "../../contexts/readingDirection"
+import { ReadingDirection } from "../../enums/readingDirection"
 import styles from "./settingsPane.module.css"
-import { useContext } from "react"
 
 export default function SettingsPane() {
 	const { bionicConfig, setBionicConfig } = useContext(BionicConfigContext)
+	const { readingDirection, setReadingDirection } = useContext(ReadingDirectionContext)
 
 	return (
 		<>
 			<Form className={styles["pane"]}>
-				<ToggleButtonGroup>
-					<Label>Reading Direction</Label>
-					<ToggleButton>
+				<Label id="reading-direction">Reading Direction</Label>
+				<ToggleButtonGroup
+					orientation="horizontal"
+					aria-labelledby="reading-direction"
+					selectedKeys={[readingDirection]}
+					onSelectionChange={selectedKeys => {
+						if (selectedKeys.size === 1) {
+							const [selectedKey] = selectedKeys
+							if (selectedKey) {
+								const readinDir = selectedKey as ReadingDirection
+								setReadingDirection(readinDir)
+							}
+						}
+					}}
+				>
+					<ToggleButton id={ReadingDirection.vertical}>
 						<MdOutlineKeyboardDoubleArrowDown />
 						<span>Vertical</span>
 					</ToggleButton>
-					<ToggleButton>
+					<ToggleButton id={ReadingDirection.horizontal}>
 						<MdOutlineKeyboardDoubleArrowRight />
 						<span>Horizontal</span>
 					</ToggleButton>
