@@ -6,7 +6,7 @@
 	z-index: 5;
 	width: calc(100vw - 4rem);
 	height: 50%;
-	overflow: auto;
+	overflow-y: auto;
 	gap: 2rem;
 	background-color: var(--bg-color-2);
 	box-shadow: 0 0 10px 0.1px var(--brand-color);
@@ -17,17 +17,20 @@
 /* Tablet and larger screens */
 @media screen and (min-width: 768px) {
 	.pane {
+		position: static;
+		width: 35rem;
+		height: 80vh;
+		max-height: 600px;
+		align-self: flex-start;
 		position: sticky;
-		bottom: initial;
 		top: 2rem;
-		width: 25rem;
-		height: initial;
+		margin-left: 3rem;
 	}
 }
 
 /* Desktop screens */
 @media screen and (min-width: 1280px) {
 	.pane {
-		width: 30rem;
+		width: 50rem;
 	}
 }

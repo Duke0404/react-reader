@@ -4,10 +4,10 @@ import { PageCallback } from "react-pdf/src/shared/types.js"
 
 import { useNavigate } from "@tanstack/react-router"
 
-import styles from "./reader.module.css"
 import { BionicConfigContext } from "../../contexts/bionicConfig"
 import useBionicRendering from "../../hooks/useBionicRendering"
-import ControlBar from "./controlBar"
+import ControlBar from "./controlBar/controlBar"
+import styles from "./reader.module.css"
 
 export interface props {
 	bookId: number

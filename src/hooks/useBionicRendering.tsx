@@ -1,5 +1,6 @@
 import { TextContent } from "pdfjs-dist/types/src/display/api"
 import { PageCallback } from "react-pdf/src/shared/types.ts"
+
 import { BionicSettings } from "../interfaces/bionicSettings"
 
 export default function useBionicRendering() {

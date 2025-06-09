@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useRef, useState, useMemo, useContext } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { Document, Page } from "react-pdf"
 import { PageCallback } from "react-pdf/src/shared/types.js"
+
 import { useNavigate } from "@tanstack/react-router"
+
 import { BionicConfigContext } from "../../contexts/bionicConfig"
+import { ReadAloudConfigContext } from "../../contexts/readAloudConfig"
 import useBionicRendering from "../../hooks/useBionicRendering"
 import useVisiblePages from "../../hooks/useVisiblePages"
-import PagePlaceholder from "./pagePlaceholder"
+import ControlBar from "./controlBar/controlBar"
+import PagePlaceholder from "./pagePlaceholder/pagePlaceholder"
+import ReadAloudBar from "./readAloudBar/readAloudBar"
 import styles from "./reader.module.css"
-import ControlBar from "./controlBar"
 
 export interface props {
 	bookId: number
@@ -93,6 +97,7 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 
 	const { bionicConfig } = useContext(BionicConfigContext)
 	const { applyBionicEffect } = useBionicRendering()
+	const { readAloudConfig } = useContext(ReadAloudConfigContext)
 
 	const canvasMod = useMemo(
 		() =>
@@ -118,34 +123,42 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 				{Array.from({ length: totalPages }, (_, i) => {
 					const pageNum = i + 1
 					return shouldRenderPage(pageNum) ? (
-						<Page
-							key={`page_${pageNum}_${renderKey}`}
-							pageNumber={pageNum}
-							className={styles["page"]}
-							inputRef={ref => (pageRefs.current[i] = ref)}
-							onLoadSuccess={pageNum === 1 ? handleFirstPageLoad : undefined}
-							data-page-number={pageNum}
-							loading={
-								<PagePlaceholder
-									key={`page_${pageNum}_${renderKey}`}
-									width={pageDimensions.width}
-									height={pageDimensions.height}
-									pageNumber={pageNum}
-									ref={ref => (pageRefs.current[i] = ref)}
-								/>
-							}
-							onRenderSuccess={
-								canvasMod
-									? page => {
-											const canvas =
-												pageRefs.current[page._pageIndex]?.querySelector(
-													"canvas"
-												)
-											if (canvas) canvasMod(page, canvas)
-										}
-									: undefined
-							}
-						/>
+						<div>
+							{readAloudConfig.on && (
+								<div className={styles["page-header"]}>
+									<ReadAloudBar pageRef={pageRefs.current[i]} />
+									<span>{i + 1}</span>
+								</div>
+							)}
+							<Page
+								key={`page_${pageNum}_${renderKey}`}
+								pageNumber={pageNum}
+								className={styles["page"]}
+								inputRef={ref => (pageRefs.current[i] = ref)}
+								onLoadSuccess={pageNum === 1 ? handleFirstPageLoad : undefined}
+								data-page-number={pageNum}
+								loading={
+									<PagePlaceholder
+										key={`page_${pageNum}_${renderKey}`}
+										width={pageDimensions.width}
+										height={pageDimensions.height}
+										pageNumber={pageNum}
+										ref={ref => (pageRefs.current[i] = ref)}
+									/>
+								}
+								onRenderSuccess={
+									canvasMod
+										? page => {
+												const canvas =
+													pageRefs.current[
+														page._pageIndex
+													]?.querySelector("canvas")
+												if (canvas) canvasMod(page, canvas)
+											}
+										: undefined
+								}
+							/>
+						</div>
 					) : (
 						firstPageLoaded && (
 							<PagePlaceholder

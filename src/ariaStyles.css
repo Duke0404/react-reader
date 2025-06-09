@@ -94,6 +94,16 @@
 	&[data-pressed]::before {
 		transform: translate(-50%, -50%) scale(0); /* Hide bubble effect on press */
 	}
+
+	&[data-disabled] {
+		opacity: 0.6;
+		cursor: not-allowed;
+		background-color: var(--text-color-2);
+
+		&::before {
+			display: none; /* Hide bubble effect when disabled */
+		}
+	}
 }
 
 .react-aria-ToggleButton {
@@ -155,6 +165,17 @@
 	&[data-pressed]::before {
 		transform: translate(-50%, -50%) scale(0); /* Hide bubble effect on press */
 	}
+
+	&[data-disabled] {
+		opacity: 0.6;
+		cursor: not-allowed;
+		background-color: transparent;
+		color: var(--text-color-2);
+
+		&::before {
+			display: none; /* Hide bubble effect when disabled */
+		}
+	}
 }
 
 .react-aria-ToggleButton[data-selected] {
@@ -205,6 +226,19 @@
 			}
 		}
 	}
+
+	&[data-disabled] {
+		opacity: 0.6;
+		cursor: not-allowed;
+
+		.indicator {
+			border-color: var(--text-color-2);
+
+			&:before {
+				background-color: var(--text-color-2);
+			}
+		}
+	}
 }
 
 .react-aria-Slider {
@@ -213,18 +247,28 @@
 		"label output"
 		"track track";
 	grid-template-columns: 1fr auto;
+	margin: 1rem 0;
 
 	.react-aria-Label {
 		grid-area: label;
+		font-weight: 500;
+		margin-bottom: 0.5rem;
 	}
 
 	.react-aria-SliderOutput {
 		grid-area: output;
+		background-color: var(--bg-color-3);
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.5rem;
+		font-size: 0.9rem;
+		min-width: 2rem;
+		text-align: center;
 	}
 
 	.react-aria-SliderTrack {
 		grid-area: track;
 		position: relative;
+		margin: 0.5rem 0;
 
 		/* track line */
 		&:before {
@@ -235,6 +279,17 @@
 			opacity: 0.6;
 			border-radius: 1rem;
 		}
+
+		/* filled part of track */
+		&:after {
+			content: "";
+			display: block;
+			position: absolute;
+			background-color: var(--brand-color);
+			opacity: 0.3;
+			border-radius: 1rem;
+			z-index: 1;
+		}
 	}
 
 	.react-aria-SliderThumb {
@@ -243,10 +298,16 @@
 		border-radius: 1rem;
 		background-color: var(--brand-color);
 		forced-color-adjust: none;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+		z-index: 2;
 
 		&[data-dragging],
 		&[data-focus-visible] {
-			scale: 1.02;
+			transform: scale(1.1);
+			box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 		}
 	}
 
@@ -260,15 +321,31 @@
 			width: 90%;
 
 			&:before {
-				height: 2px;
+				height: 4px;
 				width: 100%;
 				top: 50%;
 				transform: translateY(-50%);
+			}
+
+			&:after {
+				height: 4px;
+				left: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				/* Width will be set via JavaScript based on value */
 			}
 		}
 
 		.react-aria-SliderThumb {
 			top: 50%;
+		}
+	}
+
+	&[data-disabled] {
+		opacity: 0.6;
+
+		.react-aria-SliderThumb {
+			background-color: var(--text-color-2);
 		}
 	}
 }
@@ -343,6 +420,26 @@
 	}
 }
 
+/* Disclosure styles */
+.react-aria-Disclosure {
+	display: flex;
+	flex-direction: column;
+}
+
+.react-aria-DisclosurePanel {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	border-left: 2px solid var(--brand-color);
+	margin-left: 1rem;
+	overflow: hidden;
+	transition: all 200ms ease-in-out;
+}
+
+.react-aria-DisclosurePanel[aria-hidden="false"] {
+	padding: 1rem;
+}
+
 /* Animations */
 @keyframes fadeIn {
 	from {
@@ -364,18 +461,22 @@
 
 @keyframes slideIn {
 	from {
+		opacity: 0;
 		transform: translateY(-10px);
 	}
 	to {
+		opacity: 1;
 		transform: translateY(0);
 	}
 }
 
 @keyframes slideOut {
 	from {
+		opacity: 1;
 		transform: translateY(0);
 	}
 	to {
+		opacity: 0;
 		transform: translateY(-10px);
 	}
 }

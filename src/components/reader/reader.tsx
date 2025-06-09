@@ -1,15 +1,20 @@
 import { useLiveQuery } from "dexie-react-hooks"
-import { useNavigate } from "@tanstack/react-router"
-import { Book, db } from "../../db/db"
-import { BionicConfigContext } from "../../contexts/bionicConfig"
-import { ReadingDirectionContext } from "../../contexts/readingDirection"
-import ActionBar from "./actionBar"
-import { ReadingDirection } from "../../enums/readingDirection"
-import HorizontalReader from "./horizontalReader"
-import VerticalReader from "./verticalReader"
-import SettingsPane from "./settingsPane"
-import styles from "./reader.module.css"
 import { useContext, useReducer, useState } from "react"
+
+import { useNavigate } from "@tanstack/react-router"
+
+import { BionicConfigContext } from "../../contexts/bionicConfig"
+import { ReadAloudConfigContext } from "../../contexts/readAloudConfig"
+import { ReadingDirectionContext } from "../../contexts/readingDirection"
+import { Book, db } from "../../db/db"
+import { ReadingDirection } from "../../enums/readingDirection"
+import { BionicSettings } from "../../interfaces/bionicSettings"
+import { ReadAloudSettings } from "../../interfaces/readAloudSettings"
+import ActionBar from "./actionBar/actionBar"
+import HorizontalReader from "./horizontalReader"
+import styles from "./reader.module.css"
+import SettingsPane from "./settingsPane/settingsPane"
+import VerticalReader from "./verticalReader"
 
 interface ReaderProps {
 	bookId: number
@@ -56,7 +61,7 @@ function ReaderContent({ bookId, initPage }: ReaderProps) {
 }
 
 export default function Reader(props: ReaderProps) {
-	const [bionicConfig, setBionicConfig] = useState({
+	const [bionicConfig, setBionicConfig] = useState<BionicSettings>({
 		on: false,
 		highlightSize: 3,
 		highlightJump: 1,
@@ -64,13 +69,23 @@ export default function Reader(props: ReaderProps) {
 		lowlightOpacity: 0.6
 	})
 
+	const [readAloudConfig, setReadAloudConfig] = useState<ReadAloudSettings>({
+		on: false,
+		localAlways: false,
+		playFullPage: true
+	})
+
 	const [readingDirection, setReadingDirection] = useState(ReadingDirection.vertical)
 
 	return (
 		<BionicConfigContext.Provider value={{ bionicConfig, setBionicConfig }}>
-			<ReadingDirectionContext.Provider value={{ readingDirection, setReadingDirection }}>
-				<ReaderContent {...props} />
-			</ReadingDirectionContext.Provider>
+			<ReadAloudConfigContext.Provider value={{ readAloudConfig, setReadAloudConfig }}>
+					<ReadingDirectionContext.Provider
+						value={{ readingDirection, setReadingDirection }}
+					>
+						<ReaderContent {...props} />
+					</ReadingDirectionContext.Provider>
+			</ReadAloudConfigContext.Provider>
 		</BionicConfigContext.Provider>
 	)
 }
