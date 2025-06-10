@@ -1,13 +1,17 @@
-import { StrictMode } from "react"
-import ReactDOM from "react-dom/client"
-import "./internationalization"
-import { RouterProvider, createRouter } from "@tanstack/react-router"
-import { routeTree } from "./routeTree.gen"
-import { pdfjs } from "react-pdf"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
+
+import "./internationalization"
 import "./ariaStyles.css"
 import "./index.css"
+
+import { StrictMode } from "react"
+import ReactDOM from "react-dom/client"
+import { pdfjs } from "react-pdf"
+
+import { RouterProvider, createRouter } from "@tanstack/react-router"
+
+import { routeTree } from "./routeTree.gen"
 
 // Create a new router instance
 const router = createRouter({ routeTree })
