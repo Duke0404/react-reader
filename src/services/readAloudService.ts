@@ -57,7 +57,7 @@ class ReadAloudService extends EventTarget {
 
 		try {
 			if (this.#onlineMode) {
-				await this.#playOnline(text)
+				await this.#playOnline()
 			} else {
 				await this.#playOffline(text)
 			}
@@ -68,9 +68,9 @@ class ReadAloudService extends EventTarget {
 		}
 	}
 
-	async #playOnline(text: string): Promise<void> {
+	async #playOnline(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			fetchTTSAudio(text)
+			fetchTTSAudio()
 				.then(audioUrl => {
 					this.#audioElement.src = audioUrl
 					this.#audioElement.play()
@@ -146,7 +146,7 @@ class ReadAloudService extends EventTarget {
 	}
 }
 
-async function fetchTTSAudio(text: string): Promise<string> {
+async function fetchTTSAudio(): Promise<string> {
 	return "path/to/generated/audio.mp3"
 }
 

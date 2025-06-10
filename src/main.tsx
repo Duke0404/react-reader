@@ -9,21 +9,9 @@ import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 import { pdfjs } from "react-pdf"
 
-import { RouterProvider, createRouter } from "@tanstack/react-router"
+import App from "./app"
 
-import { routeTree } from "./routeTree.gen"
-
-// Create a new router instance
-const router = createRouter({ routeTree })
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router
-	}
-}
-
-// Configure PDF.js worker
+// Configure PDF.js worker - use local version for offline support
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 	"pdfjs-dist/build/pdf.worker.min.mjs",
 	import.meta.url
@@ -35,7 +23,7 @@ if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement)
 	root.render(
 		<StrictMode>
-			<RouterProvider router={router} />
+			<App />
 		</StrictMode>
 	)
 }

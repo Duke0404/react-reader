@@ -16,7 +16,6 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const RegisterLazyImport = createFileRoute('/register')()
 const R404LazyImport = createFileRoute('/404')()
 const IndexLazyImport = createFileRoute('/')()
 const BookIdParamCurrPageParamLazyImport = createFileRoute(
@@ -24,12 +23,6 @@ const BookIdParamCurrPageParamLazyImport = createFileRoute(
 )()
 
 // Create/Update Routes
-
-const RegisterLazyRoute = RegisterLazyImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/register.lazy').then((d) => d.Route))
 
 const R404LazyRoute = R404LazyImport.update({
   id: '/404',
@@ -70,13 +63,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof R404LazyImport
       parentRoute: typeof rootRoute
     }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/$bookIdParam/$currPageParam': {
       id: '/$bookIdParam/$currPageParam'
       path: '/$bookIdParam/$currPageParam'
@@ -92,14 +78,12 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/404': typeof R404LazyRoute
-  '/register': typeof RegisterLazyRoute
   '/$bookIdParam/$currPageParam': typeof BookIdParamCurrPageParamLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/404': typeof R404LazyRoute
-  '/register': typeof RegisterLazyRoute
   '/$bookIdParam/$currPageParam': typeof BookIdParamCurrPageParamLazyRoute
 }
 
@@ -107,30 +91,27 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
   '/404': typeof R404LazyRoute
-  '/register': typeof RegisterLazyRoute
   '/$bookIdParam/$currPageParam': typeof BookIdParamCurrPageParamLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/404' | '/register' | '/$bookIdParam/$currPageParam'
+  fullPaths: '/' | '/404' | '/$bookIdParam/$currPageParam'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/404' | '/register' | '/$bookIdParam/$currPageParam'
-  id: '__root__' | '/' | '/404' | '/register' | '/$bookIdParam/$currPageParam'
+  to: '/' | '/404' | '/$bookIdParam/$currPageParam'
+  id: '__root__' | '/' | '/404' | '/$bookIdParam/$currPageParam'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   R404LazyRoute: typeof R404LazyRoute
-  RegisterLazyRoute: typeof RegisterLazyRoute
   BookIdParamCurrPageParamLazyRoute: typeof BookIdParamCurrPageParamLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   R404LazyRoute: R404LazyRoute,
-  RegisterLazyRoute: RegisterLazyRoute,
   BookIdParamCurrPageParamLazyRoute: BookIdParamCurrPageParamLazyRoute,
 }
 
@@ -146,7 +127,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/404",
-        "/register",
         "/$bookIdParam/$currPageParam"
       ]
     },
@@ -155,9 +135,6 @@ export const routeTree = rootRoute
     },
     "/404": {
       "filePath": "404.lazy.tsx"
-    },
-    "/register": {
-      "filePath": "register.lazy.tsx"
     },
     "/$bookIdParam/$currPageParam": {
       "filePath": "$bookIdParam.$currPageParam.lazy.tsx"
