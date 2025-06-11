@@ -14,16 +14,14 @@ import {
 } from "react-aria-components"
 import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowRight } from "react-icons/md"
 
-import { BionicConfigContext } from "../../../contexts/bionicConfig"
-import { ReadAloudConfigContext } from "../../../contexts/readAloudConfig"
-import { ReadingDirectionContext } from "../../../contexts/readingDirection"
+import { ReaderSettingsContext } from "../../../contexts/readerSettings"
 import { ReadingDirection } from "../../../enums/readingDirection"
 import styles from "./settingsPane.module.css"
 
 export default function SettingsPane() {
-	const { bionicConfig, setBionicConfig } = useContext(BionicConfigContext)
-	const { readAloudConfig, setReadAloudConfig } = useContext(ReadAloudConfigContext)
-	const { readingDirection, setReadingDirection } = useContext(ReadingDirectionContext)
+	const { settings, updateBionic, updateReadAloud, updateReadingDirection, updateScale } =
+		useContext(ReaderSettingsContext)
+	const { bionic: bionicConfig, readAloud: readAloudConfig, readingDirection } = settings
 
 	return (
 		<>
@@ -38,7 +36,7 @@ export default function SettingsPane() {
 							const [selectedKey] = selectedKeys
 							if (selectedKey) {
 								const readinDir = selectedKey as ReadingDirection
-								setReadingDirection(readinDir)
+								updateReadingDirection(readinDir)
 							}
 						}
 					}}
@@ -53,10 +51,24 @@ export default function SettingsPane() {
 					</ToggleButton>
 				</ToggleButtonGroup>
 
+				<Slider
+					value={settings.scale}
+					onChange={updateScale}
+					minValue={0.25}
+					maxValue={2}
+					step={0.25}
+				>
+					<Label>Scale</Label>
+					<SliderOutput />
+					<SliderTrack>
+						<SliderThumb />
+					</SliderTrack>
+				</Slider>
+
 				<Disclosure isExpanded={bionicConfig.on}>
 					<Switch
 						isSelected={bionicConfig.on}
-						onChange={() => setBionicConfig({ ...bionicConfig, on: !bionicConfig.on })}
+						onChange={() => updateBionic({ on: !bionicConfig.on })}
 					>
 						<div className="indicator" />
 						<Label>Bionic bolding</Label>
@@ -65,9 +77,7 @@ export default function SettingsPane() {
 					<DisclosurePanel>
 						<Slider
 							value={bionicConfig.highlightSize}
-							onChange={highlightSize =>
-								setBionicConfig({ ...bionicConfig, highlightSize })
-							}
+							onChange={highlightSize => updateBionic({ highlightSize })}
 							minValue={1}
 							maxValue={5}
 							isDisabled={!bionicConfig.on}
@@ -81,9 +91,7 @@ export default function SettingsPane() {
 
 						<Slider
 							value={bionicConfig.highlightJump}
-							onChange={highlightJump =>
-								setBionicConfig({ ...bionicConfig, highlightJump })
-							}
+							onChange={highlightJump => updateBionic({ highlightJump })}
 							minValue={1}
 							maxValue={5}
 							isDisabled={!bionicConfig.on}
@@ -97,9 +105,7 @@ export default function SettingsPane() {
 
 						<Slider
 							value={bionicConfig.highlightMultiplier}
-							onChange={highlightMultiplier =>
-								setBionicConfig({ ...bionicConfig, highlightMultiplier })
-							}
+							onChange={highlightMultiplier => updateBionic({ highlightMultiplier })}
 							minValue={1}
 							maxValue={4}
 							isDisabled={!bionicConfig.on}
@@ -113,9 +119,7 @@ export default function SettingsPane() {
 
 						<Slider
 							value={bionicConfig.lowlightOpacity}
-							onChange={lowlightOpacity =>
-								setBionicConfig({ ...bionicConfig, lowlightOpacity })
-							}
+							onChange={lowlightOpacity => updateBionic({ lowlightOpacity })}
 							minValue={0}
 							maxValue={1}
 							step={0.2}
@@ -133,9 +137,7 @@ export default function SettingsPane() {
 				<Disclosure isExpanded={readAloudConfig.on}>
 					<Switch
 						isSelected={readAloudConfig.on}
-						onChange={() =>
-							setReadAloudConfig({ ...readAloudConfig, on: !readAloudConfig.on })
-						}
+						onChange={() => updateReadAloud({ on: !readAloudConfig.on })}
 					>
 						<div className="indicator" />
 						<Label>Read Aloud (TTS)</Label>
@@ -145,10 +147,7 @@ export default function SettingsPane() {
 						<Switch
 							isSelected={readAloudConfig.localAlways}
 							onChange={() =>
-								setReadAloudConfig({
-									...readAloudConfig,
-									localAlways: !readAloudConfig.localAlways
-								})
+								updateReadAloud({ localAlways: !readAloudConfig.localAlways })
 							}
 							isDisabled={!readAloudConfig.on}
 						>
@@ -159,10 +158,7 @@ export default function SettingsPane() {
 						<Switch
 							isSelected={readAloudConfig.playFullPage}
 							onChange={() =>
-								setReadAloudConfig({
-									...readAloudConfig,
-									playFullPage: !readAloudConfig.playFullPage
-								})
+								updateReadAloud({ playFullPage: !readAloudConfig.playFullPage })
 							}
 							isDisabled={!readAloudConfig.on}
 						>

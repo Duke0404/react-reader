@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { Button } from "react-aria-components"
 import { MdArrowBack, MdArrowDownward, MdArrowForward, MdArrowUpward } from "react-icons/md"
 
-import { ReadingDirectionContext } from "../../../contexts/readingDirection"
+import { ReaderSettingsContext } from "../../../contexts/readerSettings"
 import { ReadingDirection } from "../../../enums/readingDirection"
 import styles from "./controlBar.module.css"
 
@@ -13,7 +13,7 @@ interface props {
 }
 
 export default function ControlBar({ currPages, totalPage, handleDeltaPage }: props) {
-	const { readingDirection } = useContext(ReadingDirectionContext)
+	const { readingDirection } = useContext(ReaderSettingsContext).settings
 
 	return (
 		<nav className={styles["bar"]}>

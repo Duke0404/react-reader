@@ -4,8 +4,7 @@ import { PageCallback } from "react-pdf/src/shared/types.js"
 
 import { useNavigate } from "@tanstack/react-router"
 
-import { BionicConfigContext } from "../../contexts/bionicConfig"
-import { ReadAloudConfigContext } from "../../contexts/readAloudConfig"
+import { ReaderSettingsContext } from "../../contexts/readerSettings"
 import useBionicRendering from "../../hooks/useBionicRendering"
 import useVisiblePages from "../../hooks/useVisiblePages"
 import ControlBar from "./controlBar/controlBar"
@@ -95,9 +94,12 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 		})
 	}
 
-	const { bionicConfig } = useContext(BionicConfigContext)
+	const {
+		bionic: bionicConfig,
+		readAloud: readAloudConfig,
+		scale
+	} = useContext(ReaderSettingsContext).settings
 	const { applyBionicEffect } = useBionicRendering()
-	const { readAloudConfig } = useContext(ReadAloudConfigContext)
 
 	const canvasMod = useMemo(
 		() =>
@@ -137,11 +139,12 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 								inputRef={ref => (pageRefs.current[i] = ref)}
 								onLoadSuccess={pageNum === 1 ? handleFirstPageLoad : undefined}
 								data-page-number={pageNum}
+								scale={scale}
 								loading={
 									<PagePlaceholder
 										key={`page_${pageNum}_${renderKey}`}
-										width={pageDimensions.width}
-										height={pageDimensions.height}
+										width={pageDimensions.width * scale}
+										height={pageDimensions.height * scale}
 										pageNumber={pageNum}
 										ref={ref => (pageRefs.current[i] = ref)}
 									/>
@@ -163,8 +166,8 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 						firstPageLoaded && (
 							<PagePlaceholder
 								key={i}
-								width={pageDimensions.width}
-								height={pageDimensions.height}
+								width={pageDimensions.width * scale}
+								height={pageDimensions.height * scale}
 								pageNumber={pageNum}
 								ref={ref => (pageRefs.current[i] = ref)}
 							/>

@@ -1,0 +1,47 @@
+import { Dispatch, SetStateAction, createContext } from "react"
+
+import { ReadingDirection } from "../enums/readingDirection"
+import { BionicSettings } from "../interfaces/bionicSettings"
+import { ReadAloudSettings } from "../interfaces/readAloudSettings"
+import { ReaderSettings } from "../interfaces/readerSettings"
+
+export const ReaderSettingsContext = createContext<{
+	settings: ReaderSettings
+	setSettings: Dispatch<SetStateAction<ReaderSettings>>
+	updateBionic: (bionic: Partial<BionicSettings>) => void
+	updateReadAloud: (readAloud: Partial<ReadAloudSettings>) => void
+	updateReadingDirection: (direction: ReadingDirection) => void
+	updateScale: (scale: number) => void
+}>({
+	settings: {
+		bionic: {
+			on: false,
+			highlightSize: 3,
+			highlightJump: 1,
+			highlightMultiplier: 4,
+			lowlightOpacity: 0.6
+		},
+		readAloud: {
+			on: false,
+			localAlways: false,
+			playFullPage: true
+		},
+		readingDirection: ReadingDirection.vertical,
+		scale: 1
+	},
+	setSettings: () => {
+		throw new Error("SettingsContext is not provided")
+	},
+	updateBionic: () => {
+		throw new Error("SettingsContext is not provided")
+	},
+	updateReadAloud: () => {
+		throw new Error("SettingsContext is not provided")
+	},
+	updateReadingDirection: () => {
+		throw new Error("SettingsContext is not provided")
+	},
+	updateScale: () => {
+		throw new Error("SettingsContext is not provided")
+	}
+})

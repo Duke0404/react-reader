@@ -3,13 +3,12 @@ import { useContext, useReducer, useState } from "react"
 
 import { useNavigate } from "@tanstack/react-router"
 
-import { BionicConfigContext } from "../../contexts/bionicConfig"
-import { ReadAloudConfigContext } from "../../contexts/readAloudConfig"
-import { ReadingDirectionContext } from "../../contexts/readingDirection"
+import { ReaderSettingsContext } from "../../contexts/readerSettings"
 import { Book, db } from "../../db/db"
 import { ReadingDirection } from "../../enums/readingDirection"
 import { BionicSettings } from "../../interfaces/bionicSettings"
 import { ReadAloudSettings } from "../../interfaces/readAloudSettings"
+import { ReaderSettings } from "../../interfaces/readerSettings"
 import ActionBar from "./actionBar/actionBar"
 import HorizontalReader from "./horizontalReader"
 import styles from "./reader.module.css"
@@ -23,7 +22,7 @@ interface ReaderProps {
 
 function ReaderContent({ bookId, initPage }: ReaderProps) {
 	const navigate = useNavigate()
-	const { readingDirection } = useContext(ReadingDirectionContext)
+	const { readingDirection } = useContext(ReaderSettingsContext).settings
 	const [settingsOpen, toggleSettingsOpen] = useReducer(so => !so, false)
 	const [book, setBook] = useState<Book>()
 
@@ -61,31 +60,51 @@ function ReaderContent({ bookId, initPage }: ReaderProps) {
 }
 
 export default function Reader(props: ReaderProps) {
-	const [bionicConfig, setBionicConfig] = useState<BionicSettings>({
-		on: false,
-		highlightSize: 3,
-		highlightJump: 1,
-		highlightMultiplier: 4,
-		lowlightOpacity: 0.6
+	const [settings, setSettings] = useState<ReaderSettings>({
+		bionic: {
+			on: false,
+			highlightSize: 3,
+			highlightJump: 1,
+			highlightMultiplier: 4,
+			lowlightOpacity: 0.6
+		},
+		readAloud: {
+			on: false,
+			localAlways: false,
+			playFullPage: true
+		},
+		readingDirection: ReadingDirection.vertical,
+		scale: 1
 	})
 
-	const [readAloudConfig, setReadAloudConfig] = useState<ReadAloudSettings>({
-		on: false,
-		localAlways: false,
-		playFullPage: true
-	})
+	const updateBionic = (bionic: Partial<BionicSettings>) => {
+		setSettings(prev => ({ ...prev, bionic: { ...prev.bionic, ...bionic } }))
+	}
 
-	const [readingDirection, setReadingDirection] = useState(ReadingDirection.vertical)
+	const updateReadAloud = (readAloud: Partial<ReadAloudSettings>) => {
+		setSettings(prev => ({ ...prev, readAloud: { ...prev.readAloud, ...readAloud } }))
+	}
+
+	const updateReadingDirection = (readingDirection: ReadingDirection) => {
+		setSettings(prev => ({ ...prev, readingDirection }))
+	}
+
+	const updateScale = (scale: number) => {
+		setSettings(prev => ({ ...prev, scale }))
+	}
 
 	return (
-		<BionicConfigContext.Provider value={{ bionicConfig, setBionicConfig }}>
-			<ReadAloudConfigContext.Provider value={{ readAloudConfig, setReadAloudConfig }}>
-					<ReadingDirectionContext.Provider
-						value={{ readingDirection, setReadingDirection }}
-					>
-						<ReaderContent {...props} />
-					</ReadingDirectionContext.Provider>
-			</ReadAloudConfigContext.Provider>
-		</BionicConfigContext.Provider>
+		<ReaderSettingsContext.Provider
+			value={{
+				settings,
+				setSettings,
+				updateBionic,
+				updateReadAloud,
+				updateReadingDirection,
+				updateScale
+			}}
+		>
+			<ReaderContent {...props} />
+		</ReaderSettingsContext.Provider>
 	)
 }

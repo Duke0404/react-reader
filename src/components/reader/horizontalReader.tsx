@@ -4,8 +4,7 @@ import { PageCallback } from "react-pdf/src/shared/types.js"
 
 import { useNavigate } from "@tanstack/react-router"
 
-import { BionicConfigContext } from "../../contexts/bionicConfig"
-import { ReadAloudConfigContext } from "../../contexts/readAloudConfig"
+import { ReaderSettingsContext } from "../../contexts/readerSettings"
 import useBionicRendering from "../../hooks/useBionicRendering"
 import ControlBar from "./controlBar/controlBar"
 import ReadAloudBar from "./readAloudBar/readAloudBar"
@@ -28,8 +27,8 @@ export default function HorizontalReader({ bookId, bookData, initPage, totalPage
 		navigate({ to: `/${bookId}/${initPage + delta}`, replace: true })
 	}
 
-	const { bionicConfig } = useContext(BionicConfigContext)
-	const { readAloudConfig } = useContext(ReadAloudConfigContext)
+	const { bionic: bionicConfig, readAloud: readAloudConfig, scale } =
+		useContext(ReaderSettingsContext).settings
 	const { applyBionicEffect } = useBionicRendering()
 
 	const canvasMod = useMemo(
@@ -59,6 +58,7 @@ export default function HorizontalReader({ bookId, bookData, initPage, totalPage
 						className={styles["page"]}
 						canvasRef={canvasRef}
 						inputRef={pageRef}
+						scale={scale}
 						onRenderSuccess={
 							canvasMod
 								? page => {
