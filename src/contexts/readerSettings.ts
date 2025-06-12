@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, createContext } from "react"
 
 import { ReadingDirection } from "../enums/readingDirection"
 import { BionicSettings } from "../interfaces/bionicSettings"
+import { ColorModeSettings } from "../interfaces/colorModeSettings"
 import { ReadAloudSettings } from "../interfaces/readAloudSettings"
 import { ReaderSettings } from "../interfaces/readerSettings"
 
@@ -12,6 +13,7 @@ export const ReaderSettingsContext = createContext<{
 	updateReadAloud: (readAloud: Partial<ReadAloudSettings>) => void
 	updateReadingDirection: (direction: ReadingDirection) => void
 	updateScale: (scale: number) => void
+	updateColorMode: (colorMode: Partial<ColorModeSettings>) => void
 }>({
 	settings: {
 		bionic: {
@@ -27,7 +29,11 @@ export const ReaderSettingsContext = createContext<{
 			playFullPage: true
 		},
 		readingDirection: ReadingDirection.vertical,
-		scale: 1
+		scale: 1,
+		colorMode: {
+			on: false,
+			mode: "stdDark"
+		}
 	},
 	setSettings: () => {
 		throw new Error("SettingsContext is not provided")
@@ -42,6 +48,9 @@ export const ReaderSettingsContext = createContext<{
 		throw new Error("SettingsContext is not provided")
 	},
 	updateScale: () => {
+		throw new Error("SettingsContext is not provided")
+	},
+	updateColorMode: () => {
 		throw new Error("SettingsContext is not provided")
 	}
 })

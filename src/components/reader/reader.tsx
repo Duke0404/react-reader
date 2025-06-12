@@ -74,7 +74,11 @@ export default function Reader(props: ReaderProps) {
 			playFullPage: true
 		},
 		readingDirection: ReadingDirection.vertical,
-		scale: 1
+		scale: 1,
+		colorMode: {
+			on: false,
+			mode: "stdDark"
+		}
 	})
 
 	const updateBionic = (bionic: Partial<BionicSettings>) => {
@@ -93,6 +97,10 @@ export default function Reader(props: ReaderProps) {
 		setSettings(prev => ({ ...prev, scale }))
 	}
 
+	const updateColorMode = (colorMode: Partial<ReaderSettings["colorMode"]>) => {
+		setSettings(prev => ({ ...prev, colorMode: { ...prev.colorMode, ...colorMode } }))
+	}
+
 	return (
 		<ReaderSettingsContext.Provider
 			value={{
@@ -101,7 +109,8 @@ export default function Reader(props: ReaderProps) {
 				updateBionic,
 				updateReadAloud,
 				updateReadingDirection,
-				updateScale
+				updateScale,
+				updateColorMode
 			}}
 		>
 			<ReaderContent {...props} />
