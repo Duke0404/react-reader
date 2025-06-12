@@ -1,21 +1,23 @@
 import { useLiveQuery } from "dexie-react-hooks"
-import { pdfjs } from "react-pdf"
-import { useContext, useEffect, useMemo, useState, useCallback } from "react"
-import { BackendContext } from "../../contexts/backend"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { Button, FileTrigger } from "react-aria-components"
 import { MdAdd } from "react-icons/md"
+import { pdfjs } from "react-pdf"
 
-import { Book, db } from "../../db/db"
-import styles from "./dashboard.module.css"
-import Placeholder from "./placeholder/placeholder"
-import { SortBy } from "../../enums/booksSortBy"
-import BookInfo from "./bookInfo/bookInfo"
-import { ProgressInfoType } from "../../enums/progressInfoType"
-import { BookContext } from "../../contexts/book"
-import OptionsBar from "./optionsBar/optionsBar"
+import { BackendContext } from "../../contexts/backend"
 import { BackendModalOpenContext } from "../../contexts/backendModalOpen"
-import { SortConfig } from "../../interfaces/sortConfig"
+import { BookContext } from "../../contexts/book"
 import { SortConfigContext } from "../../contexts/sortConfig"
+import { colorModes } from "../../data/colorModes"
+import { Book, db } from "../../db/db"
+import { SortBy } from "../../enums/booksSortBy"
+import { ProgressInfoType } from "../../enums/progressInfoType"
+import { ReadingDirection } from "../../enums/readingDirection"
+import { SortConfig } from "../../interfaces/sortConfig"
+import BookInfo from "./bookInfo/bookInfo"
+import styles from "./dashboard.module.css"
+import OptionsBar from "./optionsBar/optionsBar"
+import Placeholder from "./placeholder/placeholder"
 
 export default function Dashboard() {
 	const [fileError, setFileError] = useState("")
@@ -98,15 +100,36 @@ export default function Dashboard() {
 					const numPages = pdf.numPages
 
 					const metadata = await pdf.getMetadata()
-					const author: string | undefined =
+					const author =
 						metadata && metadata.info && "Author" in metadata.info
 							? (metadata.info.Author as string)
-							: undefined
+							: null
 
 					if (!numPages) throw new Error("Error getting number of pages")
 
 					const title = file.name.substring(0, file.name.length - 4).replace(/_/g, " ")
 					const currTime = Date.now()
+
+					const settings = {
+						bionic: {
+							on: false,
+							highlightSize: 3,
+							highlightJump: 1,
+							highlightMultiplier: 4,
+							lowlightOpacity: 0.6
+						},
+						readAloud: {
+							on: false,
+							localAlways: false,
+							playFullPage: true
+						},
+						readingDirection: ReadingDirection.vertical,
+						scale: 1,
+						colorMode: {
+							on: false,
+							mode: "stdDark" as keyof typeof colorModes
+						}
+					}
 
 					await db.books.add({
 						title: title,
@@ -117,7 +140,8 @@ export default function Dashboard() {
 						lastReadPage: 1,
 						addTime: currTime,
 						lastReadTime: currTime,
-						cover: null
+						cover: null,
+						settings: settings
 					})
 				} catch (error) {
 					console.error(error)

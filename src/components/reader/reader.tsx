@@ -60,6 +60,7 @@ function ReaderContent({ bookId, initPage }: ReaderProps) {
 }
 
 export default function Reader(props: ReaderProps) {
+	const [book, setBook] = useState<Book>()
 	const [settings, setSettings] = useState<ReaderSettings>({
 		bionic: {
 			on: false,
@@ -81,25 +82,62 @@ export default function Reader(props: ReaderProps) {
 		}
 	})
 
+	// Fetch book and use its settings
+	useLiveQuery(async () => {
+		const fetchedBook = await db.books.get(+props.bookId)
+		if (fetchedBook) {
+			setBook(fetchedBook)
+			setSettings(fetchedBook.settings)
+		}
+	})
+
 	const updateBionic = (bionic: Partial<BionicSettings>) => {
-		setSettings(prev => ({ ...prev, bionic: { ...prev.bionic, ...bionic } }))
+		const newSettings = { ...settings, bionic: { ...settings.bionic, ...bionic } }
+		setSettings(newSettings)
+		// Update database
+		if (book) {
+			db.books.update(book.id, { settings: newSettings })
+		}
 	}
 
 	const updateReadAloud = (readAloud: Partial<ReadAloudSettings>) => {
-		setSettings(prev => ({ ...prev, readAloud: { ...prev.readAloud, ...readAloud } }))
+		const newSettings = { ...settings, readAloud: { ...settings.readAloud, ...readAloud } }
+		setSettings(newSettings)
+		// Update database
+		if (book) {
+			db.books.update(book.id, { settings: newSettings })
+		}
 	}
 
 	const updateReadingDirection = (readingDirection: ReadingDirection) => {
-		setSettings(prev => ({ ...prev, readingDirection }))
+		const newSettings = { ...settings, readingDirection }
+		setSettings(newSettings)
+		// Update database
+		if (book) {
+			db.books.update(book.id, { settings: newSettings })
+		}
 	}
 
 	const updateScale = (scale: number) => {
-		setSettings(prev => ({ ...prev, scale }))
+		const newSettings = { ...settings, scale }
+		setSettings(newSettings)
+		// Update database
+		if (book) {
+			db.books.update(book.id, { settings: newSettings })
+		}
 	}
 
 	const updateColorMode = (colorMode: Partial<ReaderSettings["colorMode"]>) => {
-		setSettings(prev => ({ ...prev, colorMode: { ...prev.colorMode, ...colorMode } }))
+		const newSettings = { ...settings, colorMode: { ...settings.colorMode, ...colorMode } }
+		setSettings(newSettings)
+		// Update database
+		if (book) {
+			db.books.update(book.id, { settings: newSettings })
+		}
 	}
+
+	// Don't render until we have the book data
+	if (!book) return <p>Loading...</p>
 
 	return (
 		<ReaderSettingsContext.Provider
