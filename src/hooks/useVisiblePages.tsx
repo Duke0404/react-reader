@@ -1,16 +1,19 @@
-import { useEffect } from "react"
 import debounce from "lodash/debounce"
+import { useEffect, useRef } from "react"
 
 export default function useVisiblePages(
 	pageRefs: React.MutableRefObject<(HTMLDivElement | null)[]>,
 	onVisiblePagesChange: (firstVisible: number, lastVisible: number) => void
 ) {
+	const debouncedOnVisiblePagesChange = useRef(debounce(onVisiblePagesChange, 150))
+
 	useEffect(() => {
 		const currentRefs = pageRefs.current
 		if (currentRefs.length === 0) return
 
-		// Debounce the processing of visible pages
-		const debouncedProcessEntries = debounce((entries: IntersectionObserverEntry[]) => {
+		const debouncedFn = debouncedOnVisiblePagesChange.current
+
+		const processEntries = (entries: IntersectionObserverEntry[]) => {
 			const visiblePages = entries
 				.filter(entry => entry.isIntersecting)
 				.map(entry => +(entry.target.getAttribute("data-page-number") as string))
@@ -19,13 +22,13 @@ export default function useVisiblePages(
 			if (visiblePages.length > 0) {
 				const firstVisible = visiblePages[0]
 				const lastVisible = visiblePages[visiblePages.length - 1]
-				onVisiblePagesChange(firstVisible, lastVisible)
+				debouncedFn(firstVisible, lastVisible)
 			}
-		}, 100) // Wait until 100ms after scrolling stops
+		}
 
 		const observer = new IntersectionObserver(
 			entries => {
-				debouncedProcessEntries(entries)
+				processEntries(entries)
 			},
 			{ threshold: 0.25 }
 		)
@@ -39,7 +42,7 @@ export default function useVisiblePages(
 				if (ref) observer.unobserve(ref)
 			})
 			observer.disconnect()
-			debouncedProcessEntries.cancel()
+			debouncedFn.cancel()
 		}
 	}, [pageRefs, onVisiblePagesChange])
 }

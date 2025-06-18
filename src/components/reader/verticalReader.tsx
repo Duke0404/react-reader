@@ -124,6 +124,7 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 	return (
 		<>
 			<Document
+				onLoadError={console.error}
 				className={styles["document"]}
 				file={bookData}
 			>

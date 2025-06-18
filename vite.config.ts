@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import { VitePWA } from "vite-plugin-pwa"
+import { viteStaticCopy } from "vite-plugin-static-copy"
 
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react-swc"
@@ -8,14 +9,22 @@ export default defineConfig({
 	plugins: [
 		react(),
 		TanStackRouterVite(),
+		viteStaticCopy({
+			targets: [
+				{
+					src: "node_modules/pdfjs-dist/build/pdf.worker.mjs",
+					dest: ""
+				}
+			]
+		}),
 		VitePWA({
 			registerType: "autoUpdate",
 			devOptions: {
 				enabled: true // Enable PWA in development
 			},
 			workbox: {
-				// Cache all static assets during build
-				globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,ttf,woff}"],
+				// Cache all static assets during build, including the PDF worker
+				globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,ttf,woff,mjs}"],
 
 				// Don't cache node_modules except specific ones we need
 				globIgnores: ["**/node_modules/**/*"],
@@ -24,11 +33,15 @@ export default defineConfig({
 				navigateFallback: "/",
 				navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
 
+				// Set cache limit to 3mb
+				maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MB
+
 				// Runtime caching strategies
 				runtimeCaching: [
 					// Cache static assets with CacheFirst strategy
 					{
-						urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|css|js|html|woff2|ttf|woff)$/,
+						urlPattern:
+							/\.(?:png|jpg|jpeg|svg|gif|webp|css|js|html|woff2|ttf|woff|mjs)$/,
 						handler: "CacheFirst",
 						options: {
 							cacheName: "static-assets",
@@ -39,9 +52,9 @@ export default defineConfig({
 						}
 					},
 
-					// Cache PDF.js worker files
+					// Cache PDF.js worker files from local assets
 					{
-						urlPattern: /^https:\/\/unpkg\.com\/pdfjs-dist\/.*$/,
+						urlPattern: /\/assets\/pdf\.worker\.min\.mjs$/,
 						handler: "CacheFirst",
 						options: {
 							cacheName: "pdf-worker-cache",
@@ -52,7 +65,7 @@ export default defineConfig({
 						}
 					},
 
-					// Cache any external CDN assets
+					// Cache any external CDN assets (fallback)
 					{
 						urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*$/,
 						handler: "CacheFirst",
