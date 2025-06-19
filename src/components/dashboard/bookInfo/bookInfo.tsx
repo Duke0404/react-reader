@@ -1,13 +1,13 @@
-import { Link } from "@tanstack/react-router"
 import { useContext } from "react"
+
+import { Link } from "@tanstack/react-router"
+
 import { BookContext } from "../../../contexts/book"
-
-import CoverFromPdf from "./coverFromPdf/coverFromPdf"
-import BookButtons from "./bookButtons/bookButtons"
-import ReadProgress from "./readProgress/readProgress"
-
-import styles from "./bookInfo.module.css"
 import { ProgressInfoType } from "../../../enums/progressInfoType"
+import BookButtons from "./bookButtons/bookButtons"
+import styles from "./bookInfo.module.css"
+import CoverFromPdf from "./coverFromPdf/coverFromPdf"
+import ReadProgress from "./readProgress/readProgress"
 
 interface props {
 	progressInfoType: ProgressInfoType
@@ -38,7 +38,7 @@ export default function BookInfo({ progressInfoType }: props) {
 
 					{/* Reading progress meter */}
 					<ReadProgress
-						currentPage={book.currentPage}
+						lastReadPage={book.lastReadPage}
 						totalPages={book.totalPages}
 						progressInfoType={progressInfoType}
 					/>

@@ -4,15 +4,15 @@ import { ProgressInfoType } from "../../../../enums/progressInfoType"
 import styles from "./readProgress.module.css"
 
 interface props {
-	currentPage: number
+	lastReadPage: number
 	totalPages: number
 	progressInfoType: ProgressInfoType
 }
 
-export default function ReadProgress({ currentPage, totalPages, progressInfoType }: props) {
+export default function ReadProgress({ lastReadPage, totalPages, progressInfoType }: props) {
 	return (
 		<Meter
-			value={currentPage}
+			value={lastReadPage}
 			minValue={1}
 			maxValue={totalPages}
 			className={styles["read-progress"]}
@@ -33,7 +33,7 @@ export default function ReadProgress({ currentPage, totalPages, progressInfoType
 						<span className={styles["value"]}>
 							{progressInfoType === ProgressInfoType.page ? (
 								<>
-									{currentPage} / {totalPages}
+									{lastReadPage} / {totalPages}
 								</>
 							) : progressInfoType === ProgressInfoType.percentage ? (
 								<>{percentage}%</>

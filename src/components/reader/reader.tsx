@@ -1,12 +1,11 @@
-import { useLiveQuery } from "dexie-react-hooks"
+import { useEffect } from "react"
 import { useContext, useReducer, useState } from "react"
 
-import { useNavigate } from "@tanstack/react-router"
-
 import { ReaderSettingsContext } from "../../contexts/readerSettings"
-import { Book, db } from "../../db/db"
+import { db } from "../../db/db"
 import { ReadingDirection } from "../../enums/readingDirection"
 import { BionicSettings } from "../../interfaces/bionicSettings"
+import { Book } from "../../interfaces/book"
 import { ReadAloudSettings } from "../../interfaces/readAloudSettings"
 import { ReaderSettings } from "../../interfaces/readerSettings"
 import ActionBar from "./actionBar/actionBar"
@@ -20,17 +19,9 @@ interface ReaderProps {
 	initPage: number
 }
 
-function ReaderContent({ bookId, initPage }: ReaderProps) {
-	const navigate = useNavigate()
+function ReaderContent({ book, initPage }: { book: Book; initPage: number }) {
 	const { readingDirection } = useContext(ReaderSettingsContext).settings
 	const [settingsOpen, toggleSettingsOpen] = useReducer(so => !so, false)
-	const [book, setBook] = useState<Book>()
-
-	useLiveQuery(async () => {
-		const book = await db.books.get(+bookId)
-		if (book) setBook(book)
-		else navigate({ to: "/404" })
-	})
 
 	if (!book) return <p>Book not found</p>
 
@@ -40,17 +31,13 @@ function ReaderContent({ bookId, initPage }: ReaderProps) {
 			<div className={styles["document-wrapper"]}>
 				{readingDirection === ReadingDirection.horizontal ? (
 					<HorizontalReader
-						bookId={bookId}
-						bookData={book.data}
+						book={book}
 						initPage={initPage}
-						totalPages={book.totalPages}
 					/>
 				) : (
 					<VerticalReader
-						bookId={bookId}
-						bookData={book.data}
+						book={book}
 						initPage={initPage}
-						totalPages={book.totalPages}
 					/>
 				)}
 			</div>
@@ -82,14 +69,14 @@ export default function Reader(props: ReaderProps) {
 		}
 	})
 
-	// Fetch book and use its settings
-	useLiveQuery(async () => {
-		const fetchedBook = await db.books.get(+props.bookId)
-		if (fetchedBook) {
-			setBook(fetchedBook)
-			setSettings(fetchedBook.settings)
-		}
-	})
+	useEffect(() => {
+		db.books.get(+props.bookId).then(fetchedBook => {
+			if (fetchedBook) {
+				setBook(fetchedBook)
+				setSettings(fetchedBook.settings)
+			}
+		})
+	}, [props.bookId])
 
 	const updateBionic = (bionic: Partial<BionicSettings>) => {
 		const newSettings = { ...settings, bionic: { ...settings.bionic, ...bionic } }
@@ -151,7 +138,10 @@ export default function Reader(props: ReaderProps) {
 				updateColorMode
 			}}
 		>
-			<ReaderContent {...props} />
+			<ReaderContent
+				book={book}
+				initPage={props.initPage}
+			/>
 		</ReaderSettingsContext.Provider>
 	)
 }

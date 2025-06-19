@@ -5,24 +5,24 @@ import { PageCallback } from "react-pdf/src/shared/types.js"
 import { useNavigate } from "@tanstack/react-router"
 
 import { ReaderSettingsContext } from "../../contexts/readerSettings"
+import { db } from "../../db/db"
 import useCanvasRendering from "../../hooks/useCanvasRendering"
 import useVisiblePages from "../../hooks/useVisiblePages"
+import { Book } from "../../interfaces/book"
 import ControlBar from "./controlBar/controlBar"
 import PagePlaceholder from "./pagePlaceholder/pagePlaceholder"
 import ReadAloudBar from "./readAloudBar/readAloudBar"
 import styles from "./reader.module.css"
 
 export interface props {
-	bookId: number
-	bookData: Blob
+	book: Book
 	initPage: number
-	totalPages: number
 }
 
 // Number of pages to load before and after the current page
 const PAGE_BUFFER = 5
 
-export default function VerticalReader({ bookId, bookData, initPage, totalPages }: props) {
+export default function VerticalReader({ book, initPage }: props) {
 	const [currPage, setCurrPage] = useState(initPage)
 	const [tillPage, setTillPage] = useState(initPage)
 
@@ -48,8 +48,8 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 	// Check if all refs are populated
 	const [allRefsPopulated, setAllRefsPopulated] = useState(false)
 	useEffect(() => {
-		if (pageRefs.current.length === totalPages) setAllRefsPopulated(true)
-	}, [pageRefs.current.length, totalPages])
+		if (pageRefs.current.length === book.totalPages) setAllRefsPopulated(true)
+	}, [pageRefs.current.length, book.totalPages])
 
 	const isFirstRender = useRef(true)
 
@@ -67,11 +67,19 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 	useVisiblePages(pageRefs, (firstVisible, lastVisible) => {
 		currPage !== firstVisible && setCurrPage(firstVisible)
 		tillPage !== lastVisible && setTillPage(lastVisible)
-		if (!isFirstRender.current) navigate({ to: `/${bookId}/${firstVisible}`, replace: true })
+		if (!isFirstRender.current) navigate({ to: `/${book.id}/${firstVisible}`, replace: true })
+	
+		// Set currentPage, lastReadTime, and lastReadPage in the database
+		const updates = {
+			currentPage: firstVisible,
+			lastReadTime: Date.now(),
+			lastReadPage: lastVisible > book.lastReadPage ? lastVisible : book.lastReadPage
+		}
+		db.books.update(book.id, updates).catch(console.error)
 
 		// Calculate the range including buffer
 		const newStart = Math.max(1, firstVisible - PAGE_BUFFER)
-		const newEnd = Math.min(totalPages, lastVisible + PAGE_BUFFER)
+		const newEnd = Math.min(book.totalPages, lastVisible + PAGE_BUFFER)
 
 		// Update visited pages
 		const newVisitedPages: number[] = []
@@ -126,9 +134,9 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 			<Document
 				onLoadError={console.error}
 				className={styles["document"]}
-				file={bookData}
+				file={book.data}
 			>
-				{Array.from({ length: totalPages }, (_, i) => {
+				{Array.from({ length: book.totalPages }, (_, i) => {
 					const pageNum = i + 1
 					return shouldRenderPage(pageNum) ? (
 						<div>
@@ -183,7 +191,7 @@ export default function VerticalReader({ bookId, bookData, initPage, totalPages 
 			</Document>
 			<ControlBar
 				currPages={[currPage, tillPage]}
-				totalPage={totalPages}
+				totalPage={book.totalPages}
 				handleDeltaPage={handleDeltaPage}
 			/>
 		</>

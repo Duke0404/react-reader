@@ -5,30 +5,42 @@ import { PageCallback } from "react-pdf/src/shared/types.js"
 import { useNavigate } from "@tanstack/react-router"
 
 import { ReaderSettingsContext } from "../../contexts/readerSettings"
+import { db } from "../../db/db"
 import useBionicRendering from "../../hooks/useBionicRendering"
+import { Book } from "../../interfaces/book"
 import ControlBar from "./controlBar/controlBar"
 import ReadAloudBar from "./readAloudBar/readAloudBar"
 import styles from "./reader.module.css"
 
 export interface props {
-	bookId: number
-	bookData: Blob
+	book: Book
 	initPage: number
-	totalPages: number
 }
 
-export default function HorizontalReader({ bookId, bookData, initPage, totalPages }: props) {
+export default function HorizontalReader({ book, initPage }: props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	const pageRef = useRef<HTMLDivElement>(null)
 
 	const navigate = useNavigate()
 
 	function handleDeltaPage(delta: number) {
-		navigate({ to: `/${bookId}/${initPage + delta}`, replace: true })
+		const newPage = initPage + delta
+		navigate({ to: `/${book.id}/${newPage}`, replace: true })
+
+		// Update database with new page information
+		const updates = {
+			currentPage: newPage,
+			lastReadTime: Date.now(),
+			lastReadPage: newPage > book.lastReadPage ? newPage : book.lastReadPage
+		}
+		db.books.update(book.id, updates).catch(console.error)
 	}
 
-	const { bionic: bionicConfig, readAloud: readAloudConfig, scale } =
-		useContext(ReaderSettingsContext).settings
+	const {
+		bionic: bionicConfig,
+		readAloud: readAloudConfig,
+		scale
+	} = useContext(ReaderSettingsContext).settings
 	const { applyBionicEffect } = useBionicRendering()
 
 	const canvasMod = useMemo(
@@ -44,7 +56,7 @@ export default function HorizontalReader({ bookId, bookData, initPage, totalPage
 		<>
 			<Document
 				className={styles["document"]}
-				file={bookData}
+				file={book.data}
 			>
 				<div>
 					{readAloudConfig.on && (
@@ -71,7 +83,7 @@ export default function HorizontalReader({ bookId, bookData, initPage, totalPage
 			</Document>
 			<ControlBar
 				currPages={[initPage]}
-				totalPage={totalPages}
+				totalPage={book.totalPages}
 				handleDeltaPage={handleDeltaPage}
 			/>
 		</>
