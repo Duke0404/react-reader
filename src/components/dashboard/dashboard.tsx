@@ -1,11 +1,12 @@
 import { useLiveQuery } from "dexie-react-hooks"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { Button, FileTrigger } from "react-aria-components"
 import { MdAdd } from "react-icons/md"
 import { pdfjs } from "react-pdf"
 
 import { BookContext } from "../../contexts/book"
 import { SortConfigContext } from "../../contexts/sortConfig"
+import { SyncContext } from "../../contexts/sync"
 import { colorModes } from "../../data/colorModes"
 import { db } from "../../db/db"
 import { SortBy } from "../../enums/booksSortBy"
@@ -150,19 +151,44 @@ export default function Dashboard() {
 		}
 	}
 
+	const { syncService } = useContext(SyncContext)
+	
 	// Delete book from state and indexedDB
 	async function deleteBook(bookId: number) {
 		await db.books.delete(bookId)
 		setBooks(books.filter(book => book.id !== bookId))
+		// Force push to server after deletion
+		if (syncService) {
+			setTimeout(() => syncService.sync(true), 100)
+		}
 	}
 
 	// Save changes to book in state and indexedDB
 	async function changeBook(book: Book) {
 		await db.books.put(book)
 		setBooks(books.map(b => (b.id === book.id ? book : b)))
+		// Force push to server after change
+		if (syncService) {
+			setTimeout(() => syncService.sync(true), 100)
+		}
 	}
 
 	const [progressInfoType] = useState(ProgressInfoType.page)
+	
+	// Track previous book count to detect additions
+	const [prevBookCount, setPrevBookCount] = useState(0)
+	
+	// Trigger sync when books are added (not on initial load)
+	useEffect(() => {
+		if (syncService && books.length > prevBookCount && prevBookCount > 0) {
+			// Force push when a new book is added (not on initial load)
+			const timer = setTimeout(() => syncService.sync(true), 500)
+			setPrevBookCount(books.length)
+			return () => clearTimeout(timer)
+		} else {
+			setPrevBookCount(books.length)
+		}
+	}, [books.length, syncService, prevBookCount])
 
 	return (
 		<>

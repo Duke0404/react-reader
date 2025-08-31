@@ -1,0 +1,109 @@
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.header h2 {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.error-message {
+	padding: 0.5rem;
+	margin: 0.5rem 0;
+	background-color: var(--error-bg, #fee);
+	color: var(--error-color, #c00);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	text-align: center;
+}
+
+.switchContainer {
+	margin: 1rem 0;
+}
+
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin-top: 1.5rem;
+}
+
+/* Match the styling of other modals in the app */
+[data-react-aria-component="Dialog"] {
+	padding: 1.5rem;
+	background: var(--surface-color);
+	border-radius: 8px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	max-width: 400px;
+	width: 90vw;
+}
+
+[data-react-aria-component="TextField"] {
+	margin-bottom: 1rem;
+}
+
+[data-react-aria-component="Label"] {
+	display: block;
+	margin-bottom: 0.25rem;
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: var(--text-color-secondary);
+}
+
+[data-react-aria-component="Input"] {
+	width: 100%;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	font-size: 1rem;
+	background: var(--input-bg);
+	color: var(--text-color);
+	transition: border-color 0.2s;
+}
+
+[data-react-aria-component="Input"]:focus {
+	outline: none;
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 3px var(--primary-color-alpha);
+}
+
+[data-react-aria-component="Switch"] {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+}
+
+[data-react-aria-component="Switch"] .indicator {
+	width: 2.5rem;
+	height: 1.5rem;
+	background: var(--switch-bg);
+	border-radius: 1rem;
+	position: relative;
+	transition: background-color 0.2s;
+}
+
+[data-react-aria-component="Switch"] .indicator::after {
+	content: "";
+	position: absolute;
+	top: 0.25rem;
+	left: 0.25rem;
+	width: 1rem;
+	height: 1rem;
+	background: white;
+	border-radius: 50%;
+	transition: transform 0.2s;
+}
+
+[data-react-aria-component="Switch"][data-selected] .indicator {
+	background: var(--primary-color);
+}
+
+[data-react-aria-component="Switch"][data-selected] .indicator::after {
+	transform: translateX(1rem);
+}

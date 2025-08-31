@@ -2,7 +2,7 @@ import {
 	DialogTrigger,
 	Button,
 } from "react-aria-components"
-import { MdOutlineCloud, MdOutlineCloudOff, MdOutlineSort } from "react-icons/md"
+import { MdOutlineCloud, MdOutlineCloudOff, MdOutlineSort, MdSync } from "react-icons/md"
 import styles from "./optionsBar.module.css"
 import useDarkMode from "../../../hooks/useDarkMode"
 import bannerLogoDark from "../../../assets/banner-logo-dark.svg"
@@ -10,6 +10,7 @@ import bannerLogoLight from "../../../assets/banner-logo-light.svg"
 import { useContext, useEffect, useState } from "react"
 import { BackendContext } from "../../../contexts/backend"
 import { AuthModalContext } from "../../../contexts/authModal"
+import { SyncContext } from "../../../contexts/sync"
 import SortPopover from "./sortPopover/sortPopover"
 
 export default function OptionsBar() {
@@ -36,6 +37,8 @@ export default function OptionsBar() {
 	}, [backend])
 
 	const { setAuthModalOpen, setAuthModalMessage } = useContext(AuthModalContext)
+	const { syncService, syncStatus } = useContext(SyncContext)
+	const [isManualSyncing, setIsManualSyncing] = useState(false)
 
 	function handleBackendClick() {
 		if (!backend?.isSet()) {
@@ -47,6 +50,19 @@ export default function OptionsBar() {
 		}
 		setAuthModalOpen(true)
 	}
+	
+	async function handleManualSync() {
+		if (!syncService) return
+		
+		setIsManualSyncing(true)
+		const result = await syncService.sync()
+		console.log("Manual sync result:", result)
+		
+		// Show result briefly
+		setTimeout(() => {
+			setIsManualSyncing(false)
+		}, 1000)
+	}
 
 	return (
 		<div className={styles["container"]}>
@@ -57,9 +73,22 @@ export default function OptionsBar() {
 				<Button
 					className="react-aria-Button subtle-button"
 					onPress={handleBackendClick}
+					aria-label="Backend connection"
 				>
 					{isAvailable ? <MdOutlineCloud /> : <MdOutlineCloudOff />}
 				</Button>
+				
+				{/* Manual sync button */}
+				{isAvailable && backend?.isSet() && (
+					<Button
+						className={`react-aria-Button subtle-button ${isManualSyncing || syncStatus === "syncing" ? styles.spinning : ""}`}
+						onPress={handleManualSync}
+						aria-label="Sync library"
+						isDisabled={syncStatus === "syncing"}
+					>
+						<MdSync />
+					</Button>
+				)}
 
 				{/* Sort popover */}
 				<DialogTrigger>

@@ -6,7 +6,9 @@ import { BackendClient } from "./clients/backendClient"
 import { ServiceWorkerRegistration } from "./components/ServiceWorkerRegistration"
 import { BackendContext } from "./contexts/backend"
 import { AuthModalContext } from "./contexts/authModal"
+import { SyncContext } from "./contexts/sync"
 import AuthModal from "./components/authModal/authModal"
+import { SyncService } from "./services/syncService"
 import { routeTree } from "./routeTree.gen"
 
 // Create a new router instance
@@ -22,6 +24,9 @@ declare module "@tanstack/react-router" {
 export default function App() {
 	const [authModalOpen, setAuthModalOpen] = useState(false)
 	const [authModalMessage, setAuthModalMessage] = useState("")
+	const [syncService, setSyncService] = useState<SyncService | null>(null)
+	const [lastSyncTime, setLastSyncTime] = useState<number | null>(null)
+	const [syncStatus, setSyncStatus] = useState<"idle" | "syncing" | "success" | "error">("idle")
 	
 	// Create backend client with auth failure callback
 	const [backend, setBackend] = useState(() => {
@@ -39,18 +44,50 @@ export default function App() {
 			setAuthModalOpen(true)
 		})
 	}, [backend])
+	
+	// Initialize sync service when backend changes
+	useEffect(() => {
+		if (backend.isSet()) {
+			setSyncService(new SyncService(backend))
+		} else {
+			setSyncService(null)
+		}
+	}, [backend])
+	
+	// Perform sync
+	const performSync = async () => {
+		if (!syncService) return
+		
+		setSyncStatus("syncing")
+		const result = await syncService.sync()
+		
+		if (result.success) {
+			setSyncStatus("success")
+			setLastSyncTime(Date.now())
+			console.log("Sync successful:", result.message)
+		} else {
+			setSyncStatus("error")
+			console.error("Sync failed:", result.message)
+		}
+		
+		// Reset status after 3 seconds
+		setTimeout(() => setSyncStatus("idle"), 3000)
+	}
 
-	// Check auth validity on mount if backend is configured
+	// Check auth validity and sync on mount if backend is configured
 	useEffect(() => {
 		if (backend.isSet()) {
 			backend.isAuthValid().then(isValid => {
 				if (!isValid) {
 					setAuthModalMessage("Please login to continue.")
 					setAuthModalOpen(true)
+				} else if (syncService) {
+					// Perform initial sync
+					performSync()
 				}
 			})
 		}
-	}, [backend])
+	}, [backend, syncService])
 
 	return (
 		<BackendContext.Provider
@@ -67,9 +104,17 @@ export default function App() {
 					setAuthModalMessage
 				}}
 			>
-				<AuthModal />
-				<RouterProvider router={router} />
-				<ServiceWorkerRegistration />
+				<SyncContext.Provider
+					value={{
+						syncService,
+						lastSyncTime,
+						syncStatus
+					}}
+				>
+					<AuthModal />
+					<RouterProvider router={router} />
+					<ServiceWorkerRegistration />
+				</SyncContext.Provider>
 			</AuthModalContext.Provider>
 		</BackendContext.Provider>
 	)
