@@ -22,7 +22,7 @@ export default function BookInfo({ progressInfoType }: props) {
 		book && (
 			<div className={styles["container"]}>
 				<Link
-					to={"/" + book.id + "/1"}
+					to={"/" + book.id + "/" + book.currentPage}
 					className={styles["info-card"]}
 				>
 					{/* Book cover */}

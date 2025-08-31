@@ -10,8 +10,15 @@ const db = new Dexie("ReactReaderDB") as Dexie & {
 }
 
 // Schema declaration:
-db.version(1).stores({
+db.version(2).stores({
 	books: bookSchema
+}).upgrade(tx => {
+	// Migration: Re-index existing books with lastReadTime and addTime
+	return tx.table("books").toCollection().modify(book => {
+		// Ensure these fields exist (they should already be in the data)
+		if (!book.lastReadTime) book.lastReadTime = book.addTime || Date.now()
+		if (!book.addTime) book.addTime = Date.now()
+	})
 })
 
 export { db }
