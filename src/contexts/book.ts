@@ -1,5 +1,5 @@
 import { createContext } from "react"
-import { Book } from "../db/db"
+import { Book } from "../interfaces/book"
 
 export const BookContext = createContext<{
 	book: Book

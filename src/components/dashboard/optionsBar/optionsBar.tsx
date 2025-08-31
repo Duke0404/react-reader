@@ -9,8 +9,7 @@ import bannerLogoDark from "../../../assets/banner-logo-dark.svg"
 import bannerLogoLight from "../../../assets/banner-logo-light.svg"
 import { useContext, useEffect, useState } from "react"
 import { BackendContext } from "../../../contexts/backend"
-import BackendForm from "./backendForm/backendForm"
-import { BackendModalOpenContext } from "../../../contexts/backendModalOpen"
+import { AuthModalContext } from "../../../contexts/authModal"
 import SortPopover from "./sortPopover/sortPopover"
 
 export default function OptionsBar() {
@@ -36,23 +35,31 @@ export default function OptionsBar() {
 		return () => clearInterval(interval)
 	}, [backend])
 
-	const { setBackendModalOpen } = useContext(BackendModalOpenContext)
+	const { setAuthModalOpen, setAuthModalMessage } = useContext(AuthModalContext)
+
+	function handleBackendClick() {
+		if (!backend?.isSet()) {
+			setAuthModalMessage?.("Please configure your backend connection.")
+		} else if (!isAvailable) {
+			setAuthModalMessage?.("Backend is not accessible. Please check your connection.")
+		} else {
+			setAuthModalMessage?.("")
+		}
+		setAuthModalOpen(true)
+	}
 
 	return (
 		<div className={styles["container"]}>
-			<img src={darkMode ? bannerLogoDark : bannerLogoLight} />
+			<img alt="React Reader" src={darkMode ? bannerLogoDark : bannerLogoLight} />
 
 			<div className={styles["options"]}>
 				{/* Backend connection indicator and button */}
-				<DialogTrigger>
-					<Button
-						className="react-aria-Button subtle-button"
-						onPress={() => setBackendModalOpen(true)}
-					>
-						{isAvailable ? <MdOutlineCloud /> : <MdOutlineCloudOff />}
-					</Button>
-					<BackendForm />
-				</DialogTrigger>
+				<Button
+					className="react-aria-Button subtle-button"
+					onPress={handleBackendClick}
+				>
+					{isAvailable ? <MdOutlineCloud /> : <MdOutlineCloudOff />}
+				</Button>
 
 				{/* Sort popover */}
 				<DialogTrigger>

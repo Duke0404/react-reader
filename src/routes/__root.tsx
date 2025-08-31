@@ -1,8 +1,5 @@
 import { RouterProvider } from "react-aria-components"
-import { useState } from "react"
 import { Outlet, createRootRoute, type ToOptions, useRouter } from "@tanstack/react-router"
-import { BackendClient } from "../clients/backendClient"
-import { BackendContext } from "../contexts/backend"
 
 // Extend RouterConfig for react-aria
 declare module "react-aria-components" {
@@ -21,18 +18,13 @@ export const Route = createRootRoute({
 function RootComponent() {
 	const router = useRouter()
 
-	const backendUrl = localStorage.getItem("backend") || ""
-	const [backend, setBackend] = useState(new BackendClient(backendUrl))
-
 	return (
-		<BackendContext.Provider value={{ backend, setBackend }}>
-			<RouterProvider
-				navigate={(to, options) => router.navigate({ to, ...options })}
-				useHref={to => router.buildLocation({ to }).href}
-			>
-				{/* Render the nested routes */}
-				<Outlet />
-			</RouterProvider>
-		</BackendContext.Provider>
+		<RouterProvider
+			navigate={(to, options) => router.navigate({ to, ...options })}
+			useHref={to => router.buildLocation({ to }).href}
+		>
+			{/* Render the nested routes */}
+			<Outlet />
+		</RouterProvider>
 	)
 }

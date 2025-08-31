@@ -1,11 +1,9 @@
 import { useLiveQuery } from "dexie-react-hooks"
-import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Button, FileTrigger } from "react-aria-components"
 import { MdAdd } from "react-icons/md"
 import { pdfjs } from "react-pdf"
 
-import { BackendContext } from "../../contexts/backend"
-import { BackendModalOpenContext } from "../../contexts/backendModalOpen"
 import { BookContext } from "../../contexts/book"
 import { SortConfigContext } from "../../contexts/sortConfig"
 import { colorModes } from "../../data/colorModes"
@@ -166,34 +164,11 @@ export default function Dashboard() {
 
 	const [progressInfoType] = useState(ProgressInfoType.page)
 
-	const { backend } = useContext(BackendContext)
-
-	const [backendFormOpen, setBackendFormOpen] = useState(false)
-
-	// Check if the backend is configured then if its authentication token is valid
-	useEffect(() => {
-		;(async function () {
-			if (backend.isSet()) {
-				const authValid = await backend.isAuthValid()
-				if (!authValid) {
-					setBackendFormOpen(true)
-				}
-			}
-		})()
-	}, [backend])
-
 	return (
 		<>
-			<BackendModalOpenContext.Provider
-				value={{
-					backendModalOpen: backendFormOpen,
-					setBackendModalOpen: setBackendFormOpen
-				}}
-			>
-				<SortConfigContext.Provider value={{ sortConfig, setSortConfig }}>
-					<OptionsBar />
-				</SortConfigContext.Provider>
-			</BackendModalOpenContext.Provider>
+			<SortConfigContext.Provider value={{ sortConfig, setSortConfig }}>
+				<OptionsBar />
+			</SortConfigContext.Provider>
 			<div>
 				<section className={styles.dashboard}>
 					{books.length > 0 ? (
