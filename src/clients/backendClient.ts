@@ -37,21 +37,28 @@ export class BackendClient {
 		if (!this.url) return false
 
 		try {
+			// Add timeout to reduce console noise
+			const controller = new AbortController()
+			const timeoutId = setTimeout(() => controller.abort(), 3000)
+			
 			const response = await fetch(`${this.url}/health`, {
 				method: "HEAD",
 				headers: {
 					"Content-Type": "text/plain"
-				}
+				},
+				signal: controller.signal
 			})
+			
+			clearTimeout(timeoutId)
 			return response.ok
 		} catch (error) {
-			console.error("Error checking backend accessibility:", error)
+			// Backend unreachable - this is expected in offline mode, don't log as error
 			return false
 		}
 	}
 
-	async isAuthValid(): Promise<boolean> {
-		if (!this.url) return false
+	async isAuthValid(): Promise<boolean | null> {
+		if (!this.url) return null // null means backend not configured or unreachable
 
 		try {
 			const response = await fetch(`${this.url}/auth/validate`, {
@@ -61,10 +68,11 @@ export class BackendClient {
 					"Content-Type": "application/json"
 				}
 			})
-			return response.ok
+			return response.ok // true if authenticated, false if 401/403
 		} catch (error) {
-			console.error("Error checking backend accessibility:", error)
-			return false
+			// Network error - backend unreachable, return null for offline mode
+			console.log("Backend unreachable, operating in offline mode")
+			return null
 		}
 	}
 

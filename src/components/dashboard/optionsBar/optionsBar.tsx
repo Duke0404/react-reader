@@ -27,13 +27,30 @@ export default function OptionsBar() {
 			return
 		}
 
-		// Check if the backend is accessible every second
-		const interval = setInterval(async function () {
+		let checkInterval = 5000 // Start with 5 seconds
+		let intervalId: number
+
+		const checkBackend = async () => {
 			const available = await backend.isAccessible()
 			setIsAvailable(available)
-		}, 1000)
+			
+			// If offline, check less frequently (30 seconds)
+			// If online, check more frequently (5 seconds)
+			const newInterval = available ? 5000 : 30000
+			if (newInterval !== checkInterval) {
+				checkInterval = newInterval
+				clearInterval(intervalId)
+				intervalId = setInterval(checkBackend, checkInterval)
+			}
+		}
 
-		return () => clearInterval(interval)
+		// Initial check
+		checkBackend()
+		
+		// Start interval
+		intervalId = setInterval(checkBackend, checkInterval)
+
+		return () => clearInterval(intervalId)
 	}, [backend])
 
 	const { setAuthModalOpen, setAuthModalMessage } = useContext(AuthModalContext)

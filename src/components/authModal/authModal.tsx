@@ -88,9 +88,12 @@ export default function AuthModal() {
 
 		// Verify authentication was successful
 		const authValid = await backend.isAuthValid()
-		if (!authValid) {
+		if (authValid === false) {
 			setTryAgainMessage("Authentication failed. Please try again.")
 			return
+		} else if (authValid === null) {
+			// Backend is unreachable after login/registration - continue anyway
+			console.log("Backend unreachable after authentication, continuing...")
 		}
 
 		// Success - clear messages and close modal

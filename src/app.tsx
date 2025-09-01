@@ -78,13 +78,15 @@ export default function App() {
 	useEffect(() => {
 		if (backend.isSet()) {
 			backend.isAuthValid().then(isValid => {
-				if (!isValid) {
+				if (isValid === false) {
+					// Only show auth modal if backend explicitly returns unauthorized
 					setAuthModalMessage("Please login to continue.")
 					setAuthModalOpen(true)
-				} else if (syncService) {
-					// Perform initial sync
+				} else if (isValid === true && syncService) {
+					// Only sync if authenticated (not in offline mode)
 					performSync()
 				}
+				// If isValid is null, backend is unreachable - allow offline operation
 			})
 		}
 	}, [backend, syncService])

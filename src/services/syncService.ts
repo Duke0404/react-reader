@@ -66,8 +66,12 @@ export class SyncService {
 			return { success: false, message: "Backend not configured" }
 		}
 		
-		if (!(await this.backend.isAuthValid())) {
+		const authValid = await this.backend.isAuthValid()
+		if (authValid === false) {
 			return { success: false, message: "Not authenticated" }
+		} else if (authValid === null) {
+			// Backend unreachable - skip sync but don't error
+			return { success: true, message: "Offline mode - sync skipped" }
 		}
 		
 		try {
@@ -84,7 +88,11 @@ export class SyncService {
 			})
 			
 			if (!response.ok) {
-				return { success: false, message: "Failed to get server timestamp" }
+				// If unauthorized, return error, otherwise assume offline
+				if (response.status === 401 || response.status === 403) {
+					return { success: false, message: "Not authenticated" }
+				}
+				return { success: true, message: "Offline mode - sync skipped" }
 			}
 			
 			const { lastUpdated: serverTimestamp } = await response.json()
@@ -101,8 +109,9 @@ export class SyncService {
 				return { success: true, message: "Library already in sync" }
 			}
 		} catch (error) {
-			console.error("Sync error:", error)
-			return { success: false, message: "Sync failed: " + error }
+			// Network error - operate in offline mode
+			console.log("Network error during sync, continuing in offline mode:", error)
+			return { success: true, message: "Offline mode - sync skipped" }
 		}
 	}
 	
@@ -127,8 +136,9 @@ export class SyncService {
 			
 			return { success: true, message: `Uploaded ${localBooks.length} books` }
 		} catch (error) {
-			console.error("Upload error:", error)
-			return { success: false, message: "Upload failed: " + error }
+			// Network error during upload - treat as offline
+			console.log("Network error during upload, continuing in offline mode:", error)
+			return { success: true, message: "Offline mode - upload skipped" }
 		}
 	}
 	
@@ -158,8 +168,9 @@ export class SyncService {
 			
 			return { success: true, message: `Downloaded ${books.length} books` }
 		} catch (error) {
-			console.error("Download error:", error)
-			return { success: false, message: "Download failed: " + error }
+			// Network error during download - treat as offline
+			console.log("Network error during download, continuing in offline mode:", error)
+			return { success: true, message: "Offline mode - download skipped" }
 		}
 	}
 }
