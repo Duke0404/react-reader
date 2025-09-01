@@ -5,12 +5,14 @@ import { BionicSettings } from "../interfaces/bionicSettings"
 import { ColorModeSettings } from "../interfaces/colorModeSettings"
 import { ReadAloudSettings } from "../interfaces/readAloudSettings"
 import { ReaderSettings } from "../interfaces/readerSettings"
+import { TranslationSettings } from "../interfaces/translationSettings"
 
 export const ReaderSettingsContext = createContext<{
 	settings: ReaderSettings
 	setSettings: Dispatch<SetStateAction<ReaderSettings>>
 	updateBionic: (bionic: Partial<BionicSettings>) => void
 	updateReadAloud: (readAloud: Partial<ReadAloudSettings>) => void
+	updateTranslation: (translation: Partial<TranslationSettings>) => void
 	updateReadingDirection: (direction: ReadingDirection) => void
 	updateScale: (scale: number) => void
 	updateColorMode: (colorMode: Partial<ColorModeSettings>) => void
@@ -28,6 +30,10 @@ export const ReaderSettingsContext = createContext<{
 			localAlways: false,
 			playFullPage: true
 		},
+		translation: {
+			on: false,
+			targetLanguage: "en"
+		},
 		readingDirection: ReadingDirection.vertical,
 		scale: 1,
 		colorMode: {
@@ -42,6 +48,9 @@ export const ReaderSettingsContext = createContext<{
 		throw new Error("SettingsContext is not provided")
 	},
 	updateReadAloud: () => {
+		throw new Error("SettingsContext is not provided")
+	},
+	updateTranslation: () => {
 		throw new Error("SettingsContext is not provided")
 	},
 	updateReadingDirection: () => {

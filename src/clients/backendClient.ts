@@ -170,7 +170,7 @@ export class BackendClient {
 				},
 				body: JSON.stringify({
 					text,
-					target: targetLanguage
+					targetLang: targetLanguage
 				})
 			})
 

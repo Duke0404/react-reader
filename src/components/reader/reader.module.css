@@ -24,39 +24,22 @@
 	z-index: 1;
 }
 
+.page-container {
+	position: relative;
+	width: 100%;
+}
+
 .page-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
 	padding: 0.5rem 1rem;
-    margin-top: 1rem;
+	margin-top: 1rem;
+	position: relative;
 }
 
-/* Tablet and larger screens */
-@media screen and (min-width: 768px) {
-	.reader-wrapper {
-		flex-direction: row;
-		justify-content: center;
-		gap: 2rem;
-		padding: 0 2rem;
-	}
-
-	.document-wrapper {
-		flex-grow: 1;
-		max-width: calc(100% - 30rem - 2rem); /* Adjusted when settings open */
-		transition: max-width 0.3s ease;
-	}
-
-	/* When settings are closed, document uses full width */
-	.reader-wrapper:not(:has(.pane)) .document-wrapper {
-		max-width: 100%;
-	}
-}
-
-/* Desktop screens */
-@media screen and (min-width: 1280px) {
-	.reader-wrapper {
-		padding: 0 4rem;
-	}
+.page-number {
+	font-weight: 600;
+	color: var(--text-color-secondary);
 }

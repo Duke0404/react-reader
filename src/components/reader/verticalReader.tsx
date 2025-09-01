@@ -12,6 +12,7 @@ import { Book } from "../../interfaces/book"
 import ControlBar from "./controlBar/controlBar"
 import PagePlaceholder from "./pagePlaceholder/pagePlaceholder"
 import ReadAloudBar from "./readAloudBar/readAloudBar"
+import TranslationButton from "./translationButton/translationButton"
 import styles from "./reader.module.css"
 
 export interface props {
@@ -106,6 +107,7 @@ export default function VerticalReader({ book, initPage }: props) {
 		bionic: bionicConfig,
 		colorMode: colorConfig,
 		readAloud: readAloudConfig,
+		translation: translationConfig = { on: false, targetLanguage: "en" },
 		scale
 	} = useContext(ReaderSettingsContext).settings
 
@@ -139,11 +141,16 @@ export default function VerticalReader({ book, initPage }: props) {
 				{Array.from({ length: book.totalPages }, (_, i) => {
 					const pageNum = i + 1
 					return shouldRenderPage(pageNum) ? (
-						<div>
-							{readAloudConfig.on && (
+						<div className={styles["page-container"]}>
+							{(readAloudConfig.on || translationConfig.on) && (
 								<div className={styles["page-header"]}>
-									<ReadAloudBar pageRef={pageRefs.current[i]} />
-									<span>{i + 1}</span>
+									{readAloudConfig.on && (
+										<ReadAloudBar pageRef={pageRefs.current[i]} />
+									)}
+									<span className={styles["page-number"]}>{i + 1}</span>
+									{translationConfig.on && (
+										<TranslationButton pageRef={pageRefs.current[i]} />
+									)}
 								</div>
 							)}
 							<Page

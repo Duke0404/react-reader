@@ -8,6 +8,7 @@ import { BionicSettings } from "../../interfaces/bionicSettings"
 import { Book } from "../../interfaces/book"
 import { ReadAloudSettings } from "../../interfaces/readAloudSettings"
 import { ReaderSettings } from "../../interfaces/readerSettings"
+import { TranslationSettings } from "../../interfaces/translationSettings"
 import ActionBar from "./actionBar/actionBar"
 import HorizontalReader from "./horizontalReader"
 import styles from "./reader.module.css"
@@ -27,7 +28,6 @@ function ReaderContent({ book, initPage }: { book: Book; initPage: number }) {
 
 	return (
 		<div className={styles["reader-wrapper"]}>
-			{settingsOpen && <SettingsPane />}
 			<div className={styles["document-wrapper"]}>
 				{readingDirection === ReadingDirection.horizontal ? (
 					<HorizontalReader
@@ -42,6 +42,10 @@ function ReaderContent({ book, initPage }: { book: Book; initPage: number }) {
 				)}
 			</div>
 			<ActionBar toggleSettings={toggleSettingsOpen} />
+			<SettingsPane 
+				isOpen={settingsOpen} 
+				onOpenChange={toggleSettingsOpen} 
+			/>
 		</div>
 	)
 }
@@ -60,6 +64,10 @@ export default function Reader(props: ReaderProps) {
 			on: false,
 			localAlways: false,
 			playFullPage: true
+		},
+		translation: {
+			on: false,
+			targetLanguage: "en"
 		},
 		readingDirection: ReadingDirection.vertical,
 		scale: 1,
@@ -89,6 +97,15 @@ export default function Reader(props: ReaderProps) {
 
 	const updateReadAloud = (readAloud: Partial<ReadAloudSettings>) => {
 		const newSettings = { ...settings, readAloud: { ...settings.readAloud, ...readAloud } }
+		setSettings(newSettings)
+		// Update database
+		if (book) {
+			db.books.update(book.id, { settings: newSettings })
+		}
+	}
+
+	const updateTranslation = (translation: Partial<TranslationSettings>) => {
+		const newSettings = { ...settings, translation: { ...settings.translation, ...translation } }
 		setSettings(newSettings)
 		// Update database
 		if (book) {
@@ -133,6 +150,7 @@ export default function Reader(props: ReaderProps) {
 				setSettings,
 				updateBionic,
 				updateReadAloud,
+				updateTranslation,
 				updateReadingDirection,
 				updateScale,
 				updateColorMode

@@ -4,14 +4,20 @@ import {
 	DisclosurePanel,
 	Form,
 	Label,
-	Slider,
-	SliderOutput,
-	SliderThumb,
-	SliderTrack,
+	ListBox,
+	ListBoxItem,
+	Popover,
+	Select,
+	SelectValue,
 	Switch,
 	ToggleButton,
-	ToggleButtonGroup
+	ToggleButtonGroup,
+	Button,
+	Dialog,
+	Modal,
+	ModalOverlay
 } from "react-aria-components"
+import { MdExpandMore, MdAdd, MdRemove, MdClose } from "react-icons/md"
 import { MdOutlineCropPortrait, MdOutlineSplitscreen } from "react-icons/md"
 
 import { ReaderSettingsContext } from "../../../contexts/readerSettings"
@@ -19,11 +25,63 @@ import { colorModes } from "../../../data/colorModes"
 import { ReadingDirection } from "../../../enums/readingDirection"
 import styles from "./settingsPane.module.css"
 
-export default function SettingsPane() {
+// Custom ValueSelector component to replace sliders
+interface ValueSelectorProps {
+	label: string
+	value: number
+	onChange: (value: number) => void
+	min: number
+	max: number
+	step: number
+	disabled?: boolean
+}
+
+function ValueSelector({ label, value, onChange, min, max, step, disabled }: ValueSelectorProps) {
+	const handleDecrease = () => {
+		const newValue = Math.max(min, value - step)
+		onChange(newValue)
+	}
+
+	const handleIncrease = () => {
+		const newValue = Math.min(max, value + step)
+		onChange(newValue)
+	}
+
+	return (
+		<div className={styles.valueSelector}>
+			<Label>{label}</Label>
+			<div className={styles.valueControls}>
+				<Button 
+					onPress={handleDecrease} 
+					isDisabled={disabled || value <= min}
+					className={styles.valueButton}
+				>
+					<MdRemove />
+				</Button>
+				<span className={styles.valueDisplay}>{value}</span>
+				<Button 
+					onPress={handleIncrease} 
+					isDisabled={disabled || value >= max}
+					className={styles.valueButton}
+				>
+					<MdAdd />
+				</Button>
+			</div>
+		</div>
+	)
+}
+
+interface SettingsPaneProps {
+	isOpen: boolean
+	onOpenChange: () => void
+}
+
+export default function SettingsPane({ isOpen, onOpenChange }: SettingsPaneProps) {
 	const {
 		settings,
 		updateBionic,
 		updateReadAloud,
+		updateTranslation,
 		updateReadingDirection,
 		updateScale,
 		updateColorMode
@@ -31,13 +89,31 @@ export default function SettingsPane() {
 	const {
 		bionic: bionicConfig,
 		readAloud: readAloudConfig,
+		translation: translationConfig = { on: false, targetLanguage: "en" },
 		readingDirection,
 		colorMode: colorModeConfig
 	} = settings
 
 	return (
-		<Form className={styles["pane"]}>
-			<ToggleButtonGroup
+		<ModalOverlay
+			isOpen={isOpen}
+			onOpenChange={onOpenChange}
+			className={styles.modalOverlay}
+			isDismissable={false} // Prevent closing when clicking outside
+		>
+			<Modal className={styles.modal}>
+				<Dialog className={styles.dialog}>
+					<div className={styles.header}>
+						<h2>Settings</h2>
+						<Button
+							onPress={onOpenChange}
+							className={styles.closeButton}
+						>
+							<MdClose />
+						</Button>
+					</div>
+					<Form className={styles["pane"]}>
+						<ToggleButtonGroup
 				orientation="vertical"
 				aria-label="Reading Direction"
 				selectedKeys={[readingDirection]}
@@ -61,19 +137,14 @@ export default function SettingsPane() {
 				</ToggleButton>
 			</ToggleButtonGroup>
 
-			<Slider
+			<ValueSelector
+				label="Scale"
 				value={settings.scale}
 				onChange={updateScale}
-				minValue={0.25}
-				maxValue={2}
+				min={0.25}
+				max={2}
 				step={0.25}
-			>
-				<Label>Scale</Label>
-				<SliderOutput />
-				<SliderTrack>
-					<SliderThumb />
-				</SliderTrack>
-			</Slider>
+			/>
 
 			<Disclosure isExpanded={colorModeConfig.on}>
 				<Switch
@@ -123,62 +194,45 @@ export default function SettingsPane() {
 				</Switch>
 
 				<DisclosurePanel>
-					<Slider
+					<ValueSelector
+						label="Highlight Size"
 						value={bionicConfig.highlightSize}
 						onChange={highlightSize => updateBionic({ highlightSize })}
-						minValue={1}
-						maxValue={5}
-						isDisabled={!bionicConfig.on}
-					>
-						<Label>Highlight Size</Label>
-						<SliderOutput />
-						<SliderTrack>
-							<SliderThumb />
-						</SliderTrack>
-					</Slider>
+						min={1}
+						max={5}
+						step={1}
+						disabled={!bionicConfig.on}
+					/>
 
-					<Slider
+					<ValueSelector
+						label="Highlight Jump"
 						value={bionicConfig.highlightJump}
 						onChange={highlightJump => updateBionic({ highlightJump })}
-						minValue={1}
-						maxValue={5}
-						isDisabled={!bionicConfig.on}
-					>
-						<Label>Highlight Jump</Label>
-						<SliderOutput />
-						<SliderTrack>
-							<SliderThumb />
-						</SliderTrack>
-					</Slider>
+						min={1}
+						max={5}
+						step={1}
+						disabled={!bionicConfig.on}
+					/>
 
-					<Slider
+					<ValueSelector
+						label="Highlight Multiplier"
 						value={bionicConfig.highlightMultiplier}
 						onChange={highlightMultiplier => updateBionic({ highlightMultiplier })}
-						minValue={1}
-						maxValue={4}
-						isDisabled={!bionicConfig.on}
-					>
-						<Label>Highlight Multiplier</Label>
-						<SliderOutput />
-						<SliderTrack>
-							<SliderThumb />
-						</SliderTrack>
-					</Slider>
+						min={1}
+						max={4}
+						step={1}
+						disabled={!bionicConfig.on}
+					/>
 
-					<Slider
+					<ValueSelector
+						label="Lowlight Opacity"
 						value={bionicConfig.lowlightOpacity}
 						onChange={lowlightOpacity => updateBionic({ lowlightOpacity })}
-						minValue={0}
-						maxValue={1}
+						min={0}
+						max={1}
 						step={0.2}
-						isDisabled={!bionicConfig.on}
-					>
-						<Label>Lowlight Opacity</Label>
-						<SliderOutput />
-						<SliderTrack>
-							<SliderThumb />
-						</SliderTrack>
-					</Slider>
+						disabled={!bionicConfig.on}
+					/>
 				</DisclosurePanel>
 			</Disclosure>
 
@@ -215,6 +269,45 @@ export default function SettingsPane() {
 					</Switch>
 				</DisclosurePanel>
 			</Disclosure>
-		</Form>
+
+			<Disclosure isExpanded={translationConfig.on}>
+				<Switch
+					isSelected={translationConfig.on}
+					onChange={() => updateTranslation({ on: !translationConfig.on })}
+				>
+					<div className="indicator" />
+					<Label>Translation</Label>
+				</Switch>
+
+				<DisclosurePanel>
+					<Select
+						selectedKey={translationConfig.targetLanguage}
+						onSelectionChange={(key) => updateTranslation({ targetLanguage: key as string })}
+						isDisabled={!translationConfig.on}
+					>
+						<Label>Target Language</Label>
+						<Button>
+							<SelectValue />
+							<MdExpandMore />
+						</Button>
+						<Popover>
+							<ListBox>
+								<ListBoxItem id="en">English</ListBoxItem>
+								<ListBoxItem id="pl">Polish</ListBoxItem>
+								<ListBoxItem id="de">German</ListBoxItem>
+								<ListBoxItem id="fr">French</ListBoxItem>
+								<ListBoxItem id="es">Spanish</ListBoxItem>
+								<ListBoxItem id="it">Italian</ListBoxItem>
+								<ListBoxItem id="pt">Portuguese</ListBoxItem>
+								<ListBoxItem id="nl">Dutch</ListBoxItem>
+							</ListBox>
+						</Popover>
+					</Select>
+				</DisclosurePanel>
+			</Disclosure>
+					</Form>
+				</Dialog>
+			</Modal>
+		</ModalOverlay>
 	)
 }

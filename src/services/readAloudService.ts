@@ -4,6 +4,7 @@ class ReadAloudService extends EventTarget {
 	#onlineMode: boolean
 	#audioElement: HTMLAudioElement
 	#isPaused: boolean // Add paused state
+	#isLoading: boolean // Add loading state
 
 	constructor() {
 		super()
@@ -12,6 +13,7 @@ class ReadAloudService extends EventTarget {
 		this.#onlineMode = false // Default to offline
 		this.#audioElement = new Audio()
 		this.#isPaused = false
+		this.#isLoading = false
 	}
 
 	// Private method to update playing state and emit event
@@ -20,7 +22,19 @@ class ReadAloudService extends EventTarget {
 			this.#isPlaying = value
 			this.dispatchEvent(
 				new CustomEvent("playStateChanged", {
-					detail: { isPlaying: value }
+					detail: { isPlaying: value, isLoading: this.#isLoading }
+				})
+			)
+		}
+	}
+
+	// Private method to update loading state and emit event
+	#setIsLoading(value: boolean) {
+		if (this.#isLoading !== value) {
+			this.#isLoading = value
+			this.dispatchEvent(
+				new CustomEvent("loadingStateChanged", {
+					detail: { isLoading: value, isPlaying: this.#isPlaying }
 				})
 			)
 		}
@@ -47,39 +61,63 @@ class ReadAloudService extends EventTarget {
 		return this.#isPaused
 	}
 
+	get isLoading(): boolean {
+		return this.#isLoading
+	}
+
 	// Play the provided text
-	async play(text: string) {
+	async play(text: string, backendClient?: any) {
 		this.stop()
 
-		this.#setIsPlaying(true)
 		this.#isPaused = false
 		this.#currentText = text
 
 		try {
-			if (this.#onlineMode) {
-				await this.#playOnline()
+			if (this.#onlineMode && backendClient) {
+				this.#setIsLoading(true)
+				await this.#playOnline(text, backendClient)
 			} else {
+				this.#setIsPlaying(true)
 				await this.#playOffline(text)
 			}
 		} catch (error) {
 			console.error("TTS playback error:", error)
+			// Fall back to offline mode if online mode fails
+			if (this.#onlineMode && backendClient) {
+				console.log("Falling back to offline TTS...")
+				this.#setIsLoading(false)
+				try {
+					this.#setIsPlaying(true)
+					await this.#playOffline(text)
+				} catch (offlineError) {
+					console.error("Offline TTS also failed:", offlineError)
+				}
+			}
 		} finally {
+			this.#setIsLoading(false)
 			this.#setIsPlaying(false)
 		}
 	}
 
-	async #playOnline(): Promise<void> {
+	async #playOnline(text: string, backendClient: any): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			fetchTTSAudio()
+			fetchTTSAudio(text, backendClient)
 				.then(audioUrl => {
+					// Audio is ready, stop loading and start playing
+					this.#setIsLoading(false)
+					this.#setIsPlaying(true)
+					
 					this.#audioElement.src = audioUrl
 					this.#audioElement.play()
 
 					this.#audioElement.onended = () => {
+						// Clean up the object URL to prevent memory leaks
+						URL.revokeObjectURL(audioUrl)
 						resolve()
 					}
 
 					this.#audioElement.onerror = () => {
+						URL.revokeObjectURL(audioUrl)
 						reject(new Error("Audio playback failed"))
 					}
 				})
@@ -140,14 +178,27 @@ class ReadAloudService extends EventTarget {
 			window.speechSynthesis.cancel()
 		}
 
+		this.#setIsLoading(false)
 		this.#setIsPlaying(false)
 		this.#isPaused = false
 		// Keep currentText for playFromStart functionality
 	}
 }
 
-async function fetchTTSAudio(): Promise<string> {
-	return "path/to/generated/audio.mp3"
+async function fetchTTSAudio(text: string, backendClient: any): Promise<string> {
+	try {
+		const audioBuffer = await backendClient.generateTTS(text)
+		if (!audioBuffer) {
+			throw new Error("Failed to generate TTS audio")
+		}
+		
+		// Convert ArrayBuffer to blob and create object URL
+		const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
+		return URL.createObjectURL(audioBlob)
+	} catch (error) {
+		console.error("Error fetching TTS audio:", error)
+		throw error
+	}
 }
 
 const readAloudService = new ReadAloudService()

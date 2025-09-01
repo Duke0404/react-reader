@@ -1,0 +1,116 @@
+.container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
+}
+
+.modalOverlay {
+	position: fixed;
+	inset: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.modal {
+	background-color: rgba(var(--bg-color-2-rgb, 34, 34, 34), 0.95);
+	backdrop-filter: blur(10px);
+	border-radius: 2rem;
+	box-shadow: 0 0 20px 0.5px var(--brand-color);
+	max-width: 90vw;
+	max-height: 90vh;
+	overflow: hidden;
+	border: 1px solid rgba(139, 102, 185, 0.2);
+}
+
+.dialog {
+	display: flex;
+	flex-direction: column;
+	min-width: 400px;
+	max-width: 600px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 2rem;
+	border-bottom: 1px solid var(--bg-color-3);
+}
+
+.header h2 {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--text-color-1);
+}
+
+.closeButton {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0.75rem;
+	border: none;
+	border-radius: 10rem;
+	background-color: var(--bg-color-3);
+	color: var(--text-color-1);
+	font-size: 1.2rem;
+	cursor: pointer;
+	transition: ease-in-out 200ms;
+	overflow: hidden;
+	box-shadow: 0 0 10px 0.1px var(--bg-color-3);
+	min-width: 44px;
+	min-height: 44px;
+}
+
+.closeButton::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 200px;
+	height: 200px;
+	background-color: rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	transition: transform 200ms ease-in-out;
+	pointer-events: none;
+}
+
+.closeButton:hover::before,
+.closeButton:focus::before {
+	transform: translate(-50%, -50%) scale(1.5);
+}
+
+.closeButton:hover,
+.closeButton:focus {
+	background-color: var(--red-color);
+	scale: 1;
+	box-shadow: 0 0 20px 0.5px var(--bg-color-3);
+}
+
+.closeButton:active {
+	scale: 0.95;
+}
+
+.closeButton:active::before {
+	transform: translate(-50%, -50%) scale(0);
+}
+
+.content {
+	padding: 2rem;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.content p {
+	margin: 0;
+	line-height: 1.6;
+	color: var(--text-color-1);
+	white-space: pre-wrap;
+}

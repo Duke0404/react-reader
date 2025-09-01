@@ -5,6 +5,7 @@ import {
 	MdOutlinePlayArrow,
 	MdOutlineStop
 } from "react-icons/md"
+import { ImSpinner8 } from "react-icons/im"
 
 import useReadAloud from "../../../hooks/useReadAloud"
 import styles from "./readAloudBar.module.css"
@@ -14,9 +15,13 @@ interface props {
 }
 
 export default function ReadAloudBar({ pageRef }: props) {
-	const { loadAndReadText, pause, resume, stop, isPlaying, isPaused } = useReadAloud()
+	const { loadAndReadText, pause, resume, stop, isPlaying, isPaused, isLoading } = useReadAloud()
 
 	const handleButtonPress = () => {
+		if (isLoading) {
+			return // Disable button when loading
+		}
+		
 		if (isPlaying) {
 			pause()
 		} else if (isPaused) {
@@ -30,12 +35,21 @@ export default function ReadAloudBar({ pageRef }: props) {
 		<div className={styles["container"]}>
 			<MdOutlineHeadphones />
 			<div className={styles["controls"]}>
-				<Button onPress={handleButtonPress}>
-					{isPlaying ? <MdOutlinePause /> : <MdOutlinePlayArrow />}
+				<Button 
+					onPress={handleButtonPress}
+					isDisabled={isLoading}
+				>
+					{isLoading ? (
+						<ImSpinner8 className={styles["spinner"]} />
+					) : isPlaying ? (
+						<MdOutlinePause />
+					) : (
+						<MdOutlinePlayArrow />
+					)}
 				</Button>
 				<Button
 					onPress={stop}
-					isDisabled={!isPlaying && !isPaused} // Enable stop button when playing OR paused
+					isDisabled={!isPlaying && !isPaused && !isLoading} // Enable stop button when playing, paused, or loading
 				>
 					<MdOutlineStop />
 				</Button>

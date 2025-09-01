@@ -123,6 +123,10 @@ export default function Dashboard() {
 							localAlways: false,
 							playFullPage: true
 						},
+						translation: {
+							on: false,
+							targetLanguage: "en"
+						},
 						readingDirection: ReadingDirection.vertical,
 						scale: 1,
 						colorMode: {

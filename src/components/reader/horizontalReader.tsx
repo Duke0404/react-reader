@@ -10,6 +10,7 @@ import useBionicRendering from "../../hooks/useBionicRendering"
 import { Book } from "../../interfaces/book"
 import ControlBar from "./controlBar/controlBar"
 import ReadAloudBar from "./readAloudBar/readAloudBar"
+import TranslationButton from "./translationButton/translationButton"
 import styles from "./reader.module.css"
 
 export interface props {
@@ -39,6 +40,7 @@ export default function HorizontalReader({ book, initPage }: props) {
 	const {
 		bionic: bionicConfig,
 		readAloud: readAloudConfig,
+		translation: translationConfig = { on: false, targetLanguage: "en" },
 		scale
 	} = useContext(ReaderSettingsContext).settings
 	const { applyBionicEffect } = useBionicRendering()
@@ -58,11 +60,16 @@ export default function HorizontalReader({ book, initPage }: props) {
 				className={styles["document"]}
 				file={book.data}
 			>
-				<div>
-					{readAloudConfig.on && (
+				<div className={styles["page-container"]}>
+					{(readAloudConfig.on || translationConfig.on) && (
 						<div className={styles["page-header"]}>
-							<ReadAloudBar pageRef={pageRef.current} />
-							<span>{initPage}</span>
+							{readAloudConfig.on && (
+								<ReadAloudBar pageRef={pageRef.current} />
+							)}
+							<span className={styles["page-number"]}>{initPage}</span>
+							{translationConfig.on && (
+								<TranslationButton pageRef={pageRef.current} />
+							)}
 						</div>
 					)}
 					<Page
