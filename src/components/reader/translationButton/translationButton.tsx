@@ -1,5 +1,5 @@
 import { useContext, useState } from "react"
-import { Button, Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-components"
+import { Button, Dialog, Modal, ModalOverlay } from "react-aria-components"
 import { MdOutlineTranslate, MdClose } from "react-icons/md"
 
 import { BackendContext } from "../../../contexts/backend"
