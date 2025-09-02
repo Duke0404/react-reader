@@ -173,9 +173,10 @@ export default function SettingsPane({ isOpen, onOpenChange }: SettingsPaneProps
 					>
 						{Object.entries(colorModes).map(([name, { background, text }]) => (
 							<ToggleButton
+								key={name}
 								id={name}
 								style={{ backgroundColor: background, color: text }}
-								className={`react-aria-ToggleButton ${styles["color-mode-button"]}`}
+								className={`react-aria-ToggleButton ${styles.colorModeButton}`}
 							>
 								<span>Text</span>
 							</ToggleButton>
