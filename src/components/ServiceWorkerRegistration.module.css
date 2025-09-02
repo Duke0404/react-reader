@@ -1,0 +1,30 @@
+.updateNotification {
+	position: fixed;
+	bottom: 2rem;
+	left: 2rem;
+	background: var(--bg-color-2);
+	color: var(--text-color-1);
+	padding: 1.5rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	border: 1px solid var(--bg-color-3);
+	z-index: 1000;
+	max-width: 300px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.message {
+	margin: 0;
+	font-size: 14px;
+	color: var(--text-color-2);
+	font-weight: 500;
+}
+
+.updateButton {
+	font-size: 0.9rem;
+	padding: 0.75rem 1rem;
+	min-width: auto;
+	min-height: auto;
+}

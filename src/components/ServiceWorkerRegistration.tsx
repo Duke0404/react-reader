@@ -1,5 +1,6 @@
-// filepath: c:\Users\devan\Prog\react-reader-project\src\components\ServiceWorkerRegistration.tsx
 import { useEffect, useState } from "react"
+import { Button } from "react-aria-components"
+import styles from "./ServiceWorkerRegistration.module.css"
 
 export function ServiceWorkerRegistration() {
     const [updateAvailable, setUpdateAvailable] = useState(false)
@@ -11,7 +12,7 @@ export function ServiceWorkerRegistration() {
             navigator.serviceWorker.ready.then((reg) => {
                 setRegistration(reg)
                 
-                // Listen for updates
+                // Listen for updates - Workbox specific handling
                 reg.addEventListener("updatefound", () => {
                     const newWorker = reg.installing
                     if (newWorker) {
@@ -24,9 +25,16 @@ export function ServiceWorkerRegistration() {
                 })
             })
 
-            // Listen for messages from service worker
+            // Listen for messages from service worker - Workbox sends different messages
             navigator.serviceWorker.addEventListener("message", (event) => {
-                if (event.data && event.data.type === "SW_UPDATE_READY") {
+                if (event.data && (event.data.type === "SW_UPDATE_READY" || event.data.type === "WORKBOX_WAITING")) {
+                    setUpdateAvailable(true)
+                }
+            })
+
+            // Check if there's already a waiting service worker
+            navigator.serviceWorker.ready.then((reg) => {
+                if (reg.waiting) {
                     setUpdateAvailable(true)
                 }
             })
@@ -35,7 +43,15 @@ export function ServiceWorkerRegistration() {
 
     const handleUpdate = () => {
         if (registration?.waiting) {
+            // For Workbox, send SKIP_WAITING message
             registration.waiting.postMessage({ type: "SKIP_WAITING" })
+            
+            // Listen for controllerchange to reload when new SW takes control
+            navigator.serviceWorker.addEventListener("controllerchange", () => {
+                window.location.reload()
+            }, { once: true })
+        } else {
+            // Fallback: just reload
             window.location.reload()
         }
     }
@@ -43,35 +59,16 @@ export function ServiceWorkerRegistration() {
     if (!updateAvailable) return null
 
     return (
-        <div style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            background: "#333",
-            color: "white",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-            zIndex: 1000,
-            maxWidth: "300px"
-        }}>
-            <p style={{ margin: "0 0 8px 0", fontSize: "14px" }}>
+        <div className={styles.updateNotification}>
+            <p className={styles.message}>
                 New version available!
             </p>
-            <button 
-                onClick={handleUpdate} 
-                style={{
-                    background: "#007bff",
-                    color: "white",
-                    border: "none",
-                    padding: "6px 12px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "12px"
-                }}
+            <Button 
+                onPress={handleUpdate}
+                className={`react-aria-Button ${styles.updateButton}`}
             >
                 Update Now
-            </button>
+            </Button>
         </div>
     )
 }
