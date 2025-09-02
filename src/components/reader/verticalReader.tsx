@@ -131,6 +131,42 @@ export default function VerticalReader({ book, initPage }: props) {
 		setRenderKey(rk => rk + 1)
 	}, [bionicConfig, colorConfig])
 
+	// Keyboard navigation for vertical reader (up/down arrows)
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// Only handle keyboard events if no input elements are focused
+			const activeElement = document.activeElement
+			if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+				return
+			}
+
+			switch (event.key) {
+				case 'ArrowUp':
+					event.preventDefault()
+					// Go to previous page
+					if (currPage > 1) {
+						handleDeltaPage(-1)
+					}
+					break
+				case 'ArrowDown':
+					event.preventDefault()
+					// Go to next page
+					if (currPage < book.totalPages) {
+						handleDeltaPage(1)
+					}
+					break
+			}
+		}
+
+		// Add event listener when component mounts
+		document.addEventListener('keydown', handleKeyDown)
+
+		// Clean up event listener when component unmounts
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [currPage, book.totalPages, handleDeltaPage])
+
 	return (
 		<>
 			<Document
