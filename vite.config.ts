@@ -12,8 +12,9 @@ export default defineConfig({
 		viteStaticCopy({
 			targets: [
 				{
-					src: "node_modules/pdfjs-dist/build/pdf.worker.mjs",
-					dest: ""
+					src: "node_modules/pdfjs-dist/build/pdf.worker.min.mjs",
+					dest: "",
+					rename: "pdf.worker.mjs"
 				}
 			]
 		}),
@@ -52,31 +53,44 @@ export default defineConfig({
 						}
 					},
 
-					// Cache PDF.js worker files from local assets
-					{
-						urlPattern: /\/assets\/pdf\.worker\.min\.mjs$/,
-						handler: "CacheFirst",
-						options: {
-							cacheName: "pdf-worker-cache",
-							expiration: {
-								maxEntries: 10,
-								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-							}
-						}
-					},
-
-					// Cache any external CDN assets (fallback)
-					{
-						urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*$/,
-						handler: "CacheFirst",
-						options: {
-							cacheName: "cdn-cache",
-							expiration: {
-								maxEntries: 50,
-								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-							}
+									// Cache PDF.js worker files
+				{
+					urlPattern: /\/pdf\.worker\.mjs$/,
+					handler: "CacheFirst",
+					options: {
+						cacheName: "pdf-worker-cache",
+						expiration: {
+							maxEntries: 10,
+							maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
 						}
 					}
+				},
+
+									// Cache PDF.js worker from unpkg CDN
+				{
+					urlPattern: /^https:\/\/unpkg\.com\/pdfjs-dist@.*\/build\/pdf\.worker\.min\.mjs$/,
+					handler: "CacheFirst",
+					options: {
+						cacheName: "pdfjs-worker-cdn",
+						expiration: {
+							maxEntries: 10,
+							maxAgeSeconds: 60 * 60 * 24 * 90 // 90 days
+						}
+					}
+				},
+
+				// Cache any other external CDN assets
+				{
+					urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*$/,
+					handler: "CacheFirst",
+					options: {
+						cacheName: "cdn-cache",
+						expiration: {
+							maxEntries: 50,
+							maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+						}
+					}
+				}
 				]
 			},
 			manifest: {
@@ -102,5 +116,11 @@ export default defineConfig({
 				]
 			}
 		})
-	]
+	],
+	// Ensure .mjs files are served with correct MIME type
+	preview: {
+		headers: {
+			'Content-Type': 'application/javascript'
+		}
+	}
 })
