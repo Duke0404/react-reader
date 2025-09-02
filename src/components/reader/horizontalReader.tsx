@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef } from "react"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { Document, Page } from "react-pdf"
 import { PageCallback } from "react-pdf/src/shared/types.js"
 
@@ -6,7 +6,7 @@ import { useNavigate } from "@tanstack/react-router"
 
 import { ReaderSettingsContext } from "../../contexts/readerSettings"
 import { db } from "../../db/db"
-import useBionicRendering from "../../hooks/useBionicRendering"
+import useCanvasRendering from "../../hooks/useCanvasRendering"
 import { Book } from "../../interfaces/book"
 import ControlBar from "./controlBar/controlBar"
 import ReadAloudBar from "./readAloudBar/readAloudBar"
@@ -39,20 +39,30 @@ export default function HorizontalReader({ book, initPage }: props) {
 
 	const {
 		bionic: bionicConfig,
+		colorMode: colorConfig,
 		readAloud: readAloudConfig,
 		translation: translationConfig = { on: false, targetLanguage: "en" },
 		scale
 	} = useContext(ReaderSettingsContext).settings
-	const { applyBionicEffect } = useBionicRendering()
+	const { applyCanvasEffects } = useCanvasRendering()
 
 	const canvasMod = useMemo(
 		() =>
-			bionicConfig.on
+			bionicConfig.on || colorConfig.on
 				? async (page: PageCallback, canvas: HTMLCanvasElement) =>
-						await applyBionicEffect(page, canvas, bionicConfig)
+						await applyCanvasEffects(page, canvas, {
+							bionic: bionicConfig,
+							colorModes: colorConfig
+						})
 				: undefined,
-		[bionicConfig, applyBionicEffect]
+		[bionicConfig, colorConfig, applyCanvasEffects]
 	)
+
+	// Trigger re-rendering of pages when any visual config changes
+	const [renderKey, setRenderKey] = useState(0)
+	useEffect(() => {
+		setRenderKey(rk => rk + 1)
+	}, [bionicConfig, colorConfig])
 
 	return (
 		<>
@@ -73,6 +83,7 @@ export default function HorizontalReader({ book, initPage }: props) {
 						</div>
 					)}
 					<Page
+						key={`page_${initPage}_${renderKey}`}
 						pageNumber={initPage}
 						className={styles["page"]}
 						canvasRef={canvasRef}
