@@ -12,7 +12,10 @@ import { SyncService } from "./services/syncService"
 import { routeTree } from "./routeTree.gen"
 
 // Create a new router instance
-const router = createRouter({ routeTree })
+const router = createRouter({ 
+	routeTree,
+	basepath: process.env.NODE_ENV === 'production' ? '/react-reader' : undefined
+})
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {

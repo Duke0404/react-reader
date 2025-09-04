@@ -12,7 +12,8 @@ import { pdfjs } from "react-pdf"
 import App from "./app"
 
 // Configure PDF.js worker with smart interception
-const workerUrl = "/pdf.worker.mjs"
+const basePath = process.env.NODE_ENV === 'production' ? '/react-reader' : ''
+const workerUrl = `${basePath}/pdf.worker.mjs`
 let currentWorkerSrc = workerUrl
 
 // Set initial worker
