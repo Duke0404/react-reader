@@ -9,8 +9,10 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"pretty": "prettier --write .",
-		"preview": "vite preview --port 3000"
+		"preview": "vite preview --port 3000",
+		"deploy": "npm run build && gh-pages -d dist"
 	},
+	"homepage": "https://Duke0404.github.io/react-reader",
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.0",
 		"@tanstack/react-router": "^1.47.1",

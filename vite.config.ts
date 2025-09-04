@@ -6,7 +6,7 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react-swc"
 
 export default defineConfig({
-	base: "/",
+	base: process.env.NODE_ENV === 'production' ? '/react-reader/' : '/',
 	plugins: [
 		react(),
 		TanStackRouterVite(),
@@ -32,7 +32,7 @@ export default defineConfig({
 				globIgnores: ["**/node_modules/**/*"],
 
 				// Handle client-side routing
-				navigateFallback: "/",
+				navigateFallback: process.env.NODE_ENV === 'production' ? '/react-reader/' : '/',
 				navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
 
 				// Set cache limit to 3mb
@@ -102,8 +102,8 @@ export default defineConfig({
 				theme_color: "#ffffff",
 				background_color: "#ffffff",
 				display: "standalone",
-				start_url: "/",
-				scope: "/",
+				start_url: process.env.NODE_ENV === 'production' ? '/react-reader/' : '/',
+				scope: process.env.NODE_ENV === 'production' ? '/react-reader/' : '/',
 				icons: [
 					{
 						src: "icons/icon-192x192.png",
