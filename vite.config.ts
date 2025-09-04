@@ -6,6 +6,7 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react-swc"
 
 export default defineConfig({
+	base: "/",
 	plugins: [
 		react(),
 		TanStackRouterVite(),
@@ -53,44 +54,45 @@ export default defineConfig({
 						}
 					},
 
-									// Cache PDF.js worker files
-				{
-					urlPattern: /\/pdf\.worker\.mjs$/,
-					handler: "CacheFirst",
-					options: {
-						cacheName: "pdf-worker-cache",
-						expiration: {
-							maxEntries: 10,
-							maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+					// Cache PDF.js worker files
+					{
+						urlPattern: /\/pdf\.worker\.mjs$/,
+						handler: "CacheFirst",
+						options: {
+							cacheName: "pdf-worker-cache",
+							expiration: {
+								maxEntries: 10,
+								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+							}
 						}
-					}
-				},
+					},
 
-									// Cache PDF.js worker from unpkg CDN
-				{
-					urlPattern: /^https:\/\/unpkg\.com\/pdfjs-dist@.*\/build\/pdf\.worker\.min\.mjs$/,
-					handler: "CacheFirst",
-					options: {
-						cacheName: "pdfjs-worker-cdn",
-						expiration: {
-							maxEntries: 10,
-							maxAgeSeconds: 60 * 60 * 24 * 90 // 90 days
+					// Cache PDF.js worker from unpkg CDN
+					{
+						urlPattern:
+							/^https:\/\/unpkg\.com\/pdfjs-dist@.*\/build\/pdf\.worker\.min\.mjs$/,
+						handler: "CacheFirst",
+						options: {
+							cacheName: "pdfjs-worker-cdn",
+							expiration: {
+								maxEntries: 10,
+								maxAgeSeconds: 60 * 60 * 24 * 90 // 90 days
+							}
 						}
-					}
-				},
+					},
 
-				// Cache any other external CDN assets
-				{
-					urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*$/,
-					handler: "CacheFirst",
-					options: {
-						cacheName: "cdn-cache",
-						expiration: {
-							maxEntries: 50,
-							maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+					// Cache any other external CDN assets
+					{
+						urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*$/,
+						handler: "CacheFirst",
+						options: {
+							cacheName: "cdn-cache",
+							expiration: {
+								maxEntries: 50,
+								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+							}
 						}
 					}
-				}
 				]
 			},
 			manifest: {
@@ -106,21 +108,47 @@ export default defineConfig({
 					{
 						src: "icons/icon-192x192.png",
 						sizes: "192x192",
-						type: "image/png"
+						type: "image/png",
+						purpose: "any"
 					},
 					{
 						src: "icons/icon-512x512.png",
 						sizes: "512x512",
-						type: "image/png"
+						type: "image/png",
+						purpose: "any"
+					},
+					{
+						src: "icons/icon-maskable-192x192",
+						sizes: "192x192",
+						type: "image/png",
+						purpose: "maskable"
+					},
+					{
+						src: "icons/icon-maskable.svg",
+						sizes: "192x192",
+						type: "image/svg+xml",
+						purpose: "maskable"
+					},
+					{
+						src: "icons/icon-mono.svg",
+						sizes: "32x32",
+						type: "image/svg+xml",
+						purpose: "monochrome"
+					},
+					{
+						src: "icons/icon.svg",
+						sizes: "32x32",
+						type: "image/svg+xml",
+						purpose: "any"
 					}
 				]
 			}
 		})
 	],
-	// Ensure .mjs files are served with correct MIME type
+	// Preview server configuration
 	preview: {
-		headers: {
-			'Content-Type': 'application/javascript'
-		}
+		port: 3000,
+		strictPort: true,
+		host: true
 	}
 })

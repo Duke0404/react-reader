@@ -28,7 +28,7 @@ export default function OptionsBar() {
 		}
 
 		let checkInterval = 5000 // Start with 5 seconds
-		let intervalId: number
+		let intervalId: NodeJS.Timeout
 
 		const checkBackend = async () => {
 			const available = await backend.isAccessible()
