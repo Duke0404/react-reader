@@ -83,7 +83,7 @@ export default function OptionsBar() {
 
 	return (
 		<div className={styles["container"]}>
-			<img alt="React Reader" src={darkMode ? bannerLogoDark : bannerLogoLight} />
+			<img alt="React Reader" src={darkMode ? bannerLogoDark : bannerLogoLight} width={146} height={47} />
 
 			<div className={styles["options"]}>
 				{/* Backend connection indicator and button */}
