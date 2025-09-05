@@ -20,10 +20,11 @@ export default function BookInfo({ progressInfoType }: props) {
 	return (
 		bookContext &&
 		book && (
-			<div className={styles["container"]}>
+			<article className={styles["container"]}>
 				<Link
 					to={"/" + book.id + "/" + book.currentPage}
 					className={styles["info-card"]}
+					aria-label={`Read ${book.title}${book.author ? ` by ${book.author}` : ""}`}
 				>
 					{/* Book cover */}
 					{book.cover ? (
@@ -52,7 +53,7 @@ export default function BookInfo({ progressInfoType }: props) {
 
 				{/* Book Buttons */}
 				<BookButtons />
-			</div>
+			</article>
 		)
 	)
 }

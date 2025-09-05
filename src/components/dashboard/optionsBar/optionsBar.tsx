@@ -90,9 +90,9 @@ export default function OptionsBar() {
 				<Button
 					className="react-aria-Button subtle-button"
 					onPress={handleBackendClick}
-					aria-label="Backend connection"
+					aria-label={`Backend connection ${isAvailable ? "online" : "offline"}`}
 				>
-					{isAvailable ? <MdOutlineCloud /> : <MdOutlineCloudOff />}
+					{isAvailable ? <MdOutlineCloud aria-hidden="true" /> : <MdOutlineCloudOff aria-hidden="true" />}
 				</Button>
 				
 				{/* Manual sync button */}
@@ -100,17 +100,20 @@ export default function OptionsBar() {
 					<Button
 						className={`react-aria-Button subtle-button ${isManualSyncing || syncStatus === "syncing" ? styles.spinning : ""}`}
 						onPress={handleManualSync}
-						aria-label="Sync library"
+						aria-label={`${syncStatus === "syncing" ? "Syncing library..." : "Sync library"}`}
 						isDisabled={syncStatus === "syncing"}
 					>
-						<MdSync />
+						<MdSync aria-hidden="true" />
 					</Button>
 				)}
 
 				{/* Sort popover */}
 				<DialogTrigger>
-					<Button className="react-aria-Button subtle-button">
-						<MdOutlineSort />
+					<Button 
+						className="react-aria-Button subtle-button"
+						aria-label="Sort books"
+					>
+						<MdOutlineSort aria-hidden="true" />
 					</Button>
 
 					<SortPopover />

@@ -11,10 +11,10 @@ export default function BookButtons() {
 			{/* Metadata edit button */}
 			<DialogTrigger>
 				<Button
-					aria-label="Edit"
+					aria-label="Edit metadata"
 					className="react-aria-Button subtle-button"
 				>
-					<MdOutlineEdit />
+					<MdOutlineEdit aria-hidden="true" />
 					<span>Metadata</span>
 				</Button>
 
@@ -25,10 +25,10 @@ export default function BookButtons() {
 			{/* Delete book button */}
 			<DialogTrigger>
 				<Button
-					aria-label="Delete"
+					aria-label="Delete book"
 					className="react-aria-Button subtle-button red-button"
 				>
-					<MdOutlineDelete />
+					<MdOutlineDelete aria-hidden="true" />
 				</Button>
 
 				{/* Alert for confirming book deletion */}

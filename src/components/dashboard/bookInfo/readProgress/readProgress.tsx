@@ -16,7 +16,8 @@ export default function ReadProgress({ lastReadPage, totalPages, progressInfoTyp
 			minValue={1}
 			maxValue={totalPages}
 			className={styles["read-progress"]}
-			aria-label="Book completion level"
+			aria-label="Book reading progress"
+			aria-valuetext={`Page ${lastReadPage} of ${totalPages} (${Math.round(((lastReadPage - 1) / (totalPages - 1)) * 100)}% complete)`}
 		>
 			{({ percentage }) => {
 				if (totalPages === 1) percentage = 100

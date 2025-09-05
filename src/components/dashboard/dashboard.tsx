@@ -196,39 +196,44 @@ export default function Dashboard() {
 
 	return (
 		<>
-			<SortConfigContext.Provider value={{ sortConfig, setSortConfig }}>
-				<OptionsBar />
-			</SortConfigContext.Provider>
-			<div>
-				<section className={styles.dashboard}>
+			<a href="#main-content" className="sr-only focus:not-sr-only">Skip to main content</a>
+			<header className={styles["header"]}>
+				<SortConfigContext.Provider value={{ sortConfig, setSortConfig }}>
+					<OptionsBar />
+				</SortConfigContext.Provider>
+			</header>
+			<main id="main-content">
+				<h1 className="sr-only">Book Library Dashboard</h1>
+				<section className={styles.dashboard} aria-label="Book collection">
 					{books.length > 0 ? (
 						books.map(book => (
-							<>
-								<BookContext.Provider
-									value={{ book, deleteBook, changeBook }}
-									key={book.id}
-								>
-									<BookInfo progressInfoType={progressInfoType} />
-								</BookContext.Provider>
-							</>
+							<BookContext.Provider
+								value={{ book, deleteBook, changeBook }}
+								key={book.id}
+							>
+								<BookInfo progressInfoType={progressInfoType} />
+							</BookContext.Provider>
 						))
 					) : (
 						<Placeholder />
 					)}
 				</section>
 
-				{fileError && <div>{fileError}</div>}
+				{fileError && <div role="alert" aria-live="polite">{fileError}</div>}
 
 				<FileTrigger
 					acceptedFileTypes={["application/pdf"]}
 					allowsMultiple
 					onSelect={handleFileUpload}
 				>
-					<Button className={styles.addButton + " react-aria-Button"}>
-						<MdAdd />
+					<Button 
+						className={styles.addButton + " react-aria-Button"}
+						aria-label="Add new books"
+					>
+						<MdAdd aria-hidden="true" />
 					</Button>
 				</FileTrigger>
-			</div>
+			</main>
 		</>
 	)
 }
