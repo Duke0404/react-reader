@@ -1,5 +1,5 @@
-import debounce from "lodash/debounce"
 import { useEffect, useRef } from "react"
+import { debounce } from "../utils/debounce"
 
 export default function useVisiblePages(
 	pageRefs: React.MutableRefObject<(HTMLDivElement | null)[]>,
