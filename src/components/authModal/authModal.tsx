@@ -34,6 +34,7 @@ export default function AuthModal() {
 	const [password, setPassword] = useState("")
 	const [confirmPassword, setConfirmPassword] = useState("")
 	const [tryAgainMessage, setTryAgainMessage] = useState("")
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	// Set initial message if provided
 	useEffect(() => {
@@ -53,7 +54,12 @@ export default function AuthModal() {
 	}, [authModalOpen])
 
 	async function handleSave() {
-		// Update backend URL if changed or being set for the first time
+		if (isSubmitting) return // Prevent double submission
+		setIsSubmitting(true)
+		setTryAgainMessage("") // Clear any previous error messages
+		
+		try {
+			// Update backend URL if changed or being set for the first time
 		if (backendUrl && backendUrl !== backend.url) {
 			const newBackend = new BackendClient(backendUrl, backend.authFailureCallback)
 			setBackend(newBackend)
@@ -106,6 +112,9 @@ export default function AuthModal() {
 				console.log("Triggering sync after authentication...")
 				syncService.sync()
 			}, 500)
+		}
+		} finally {
+			setIsSubmitting(false)
 		}
 	}
 
@@ -200,8 +209,8 @@ export default function AuthModal() {
 					<div className={styles.actions}>
 						<Button
 							className="react-aria-Button"
-							onPress={handleSave}
 							type="submit"
+							isDisabled={isSubmitting}
 						>
 							<MdOutlineSave />
 							{registrationRequired ? "Register" : "Login"}
