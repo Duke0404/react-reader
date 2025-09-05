@@ -7,14 +7,15 @@ import react from "@vitejs/plugin-react-swc"
 export default defineConfig({
 	base: process.env.NODE_ENV === 'production' ? '/react-reader/' : '/',
 	build: {
+		sourcemap: true,
 		rollupOptions: {
 			output: {
 				manualChunks: {
-					'vendor-react': ['react', 'react-dom', 'react-aria-components'],
-					'vendor-pdf': ['react-pdf', 'pdfjs-dist'],
-					'vendor-router': ['@tanstack/react-router'],
-					'vendor-db': ['dexie', 'dexie-react-hooks'],
-					'vendor-icons': ['react-icons/md', 'react-icons/im']
+					"vendor-react": ["react", "react-dom", "react-aria-components"],
+					"vendor-pdf": ["react-pdf", "pdfjs-dist"],
+					"vendor-router": ["@tanstack/react-router"],
+					"vendor-db": ["dexie", "dexie-react-hooks"],
+					"vendor-icons": ["react-icons/md", "react-icons/im"]
 				}
 			}
 		}
