@@ -13,11 +13,15 @@ export default function ActionBar({ toggleSettings }: props) {
 			<Link
 				className="react-aria-Button"
 				href="/"
+				aria-label="Return to library"
 			>
-				<MdOutlineHome />
+				<MdOutlineHome aria-hidden="true" />
 			</Link>
-			<Button onPress={toggleSettings}>
-				<MdOutlineSettings />
+			<Button 
+				onPress={toggleSettings}
+				aria-label="Open reader settings"
+			>
+				<MdOutlineSettings aria-hidden="true" />
 			</Button>
 		</nav>
 	)

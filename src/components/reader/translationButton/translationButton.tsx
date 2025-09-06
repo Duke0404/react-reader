@@ -80,7 +80,7 @@ export default function TranslationButton({ pageRef }: Props) {
 					onPress={handleTranslate}
 					isDisabled={isLoading}
 				>
-					<MdOutlineTranslate />
+					<MdOutlineTranslate aria-hidden="true" />
 					<span>{isLoading ? "Translating..." : "Translate"}</span>
 				</Button>
 			</div>

@@ -33,25 +33,32 @@ export default function ReadAloudBar({ pageRef }: props) {
 
 	return (
 		<div className={styles["container"]}>
-			<MdOutlineHeadphones />
+			<MdOutlineHeadphones aria-hidden="true" />
 			<div className={styles["controls"]}>
 				<Button 
 					onPress={handleButtonPress}
 					isDisabled={isLoading}
+					aria-label={
+						isLoading ? "Loading audio..." : 
+						isPlaying ? "Pause reading" : 
+						isPaused ? "Resume reading" : 
+						"Start reading aloud"
+					}
 				>
 					{isLoading ? (
-						<ImSpinner8 className={styles["spinner"]} />
+						<ImSpinner8 className={styles["spinner"]} aria-hidden="true" />
 					) : isPlaying ? (
-						<MdOutlinePause />
+						<MdOutlinePause aria-hidden="true" />
 					) : (
-						<MdOutlinePlayArrow />
+						<MdOutlinePlayArrow aria-hidden="true" />
 					)}
 				</Button>
 				<Button
 					onPress={stop}
-					isDisabled={!isPlaying && !isPaused && !isLoading} // Enable stop button when playing, paused, or loading
+					isDisabled={!isPlaying && !isPaused && !isLoading}
+					aria-label="Stop reading"
 				>
-					<MdOutlineStop />
+					<MdOutlineStop aria-hidden="true" />
 				</Button>
 			</div>
 		</div>

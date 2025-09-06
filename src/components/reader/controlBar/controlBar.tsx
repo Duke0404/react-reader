@@ -24,19 +24,25 @@ export default function ControlBar({ currPages, totalPage, handleDeltaPage }: pr
 				{" / " + totalPage}
 			</div>
 			<div className={styles["button-group"]}>
-				<Button onPress={() => handleDeltaPage(-1)}>
+				<Button 
+					onPress={() => handleDeltaPage(-1)}
+					aria-label={readingDirection === ReadingDirection.vertical ? "Previous page (up)" : "Previous page"}
+				>
 					{readingDirection === ReadingDirection.vertical ? (
-						<MdArrowUpward />
+						<MdArrowUpward aria-hidden="true" />
 					) : (
-						<MdArrowBack />
+						<MdArrowBack aria-hidden="true" />
 					)}
 				</Button>
 
-				<Button onPress={() => handleDeltaPage(1)}>
+				<Button 
+					onPress={() => handleDeltaPage(1)}
+					aria-label={readingDirection === ReadingDirection.vertical ? "Next page (down)" : "Next page"}
+				>
 					{readingDirection === ReadingDirection.vertical ? (
-						<MdArrowDownward />
+						<MdArrowDownward aria-hidden="true" />
 					) : (
-						<MdArrowForward />
+						<MdArrowForward aria-hidden="true" />
 					)}
 				</Button>
 			</div>
