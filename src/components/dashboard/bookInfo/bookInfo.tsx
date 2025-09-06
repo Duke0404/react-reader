@@ -24,7 +24,6 @@ export default function BookInfo({ progressInfoType }: props) {
 				<Link
 					to={"/" + book.id + "/" + book.currentPage}
 					className={styles["info-card"]}
-					aria-label={`Read ${book.title}${book.author ? ` by ${book.author}` : ""}`}
 				>
 					{/* Book cover */}
 					{book.cover ? (
