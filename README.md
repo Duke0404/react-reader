@@ -129,7 +129,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 🐛 Bug Reports
 
 Found a bug? Please open an issue on [GitHub Issues](https://github.com/duke0404/react-reader/issues).
-
-## 📚 Documentation
-
-For detailed documentation and API reference, see the [thesis document](https://github.com/duke0404/react-reader/wiki).
